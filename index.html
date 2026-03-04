@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>$CARDIO | Web3 Meets Medical Innovation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff2a6d;
+            --secondary: #05d9e8;
+            --accent: #d1f7ff;
+            --dark: #0a0a0f;
+            --darker: #050508;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--darker);
+            color: white;
+            overflow-x: hidden;
+        }
+        
+        h1, h2, h3, .font-display {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #ff2a6d 0%, #ff8a5b 50%, #ffd166 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .gradient-border {
+            position: relative;
+            background: linear-gradient(var(--darker), var(--darker)) padding-box,
+                        linear-gradient(135deg, #ff2a6d, #05d9e8) border-box;
+            border: 2px solid transparent;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .pulse-glow {
+            animation: pulse-glow 3s ease-in-out infinite;
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 42, 109, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(255, 42, 109, 0.6); }
+        }
+        
+        .heartbeat {
+            animation: heartbeat 2s ease-in-out infinite;
+        }
+        
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            10% { transform: scale(1.05); }
+            20% { transform: scale(1); }
+            30% { transform: scale(1.05); }
+            40% { transform: scale(1); }
+        }
+        
+        .floating {
+            animation: floating 6s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .grid-bg {
+            background-image: 
+                linear-gradient(rgba(255, 42, 109, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 42, 109, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+        
+        .ecg-line {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: draw 3s ease-in-out infinite;
+        }
+        
+        @keyframes draw {
+            to { stroke-dashoffset: 0; }
+        }
+        
+        .token-card {
+            transition: all 0.3s ease;
+        }
+        
+        .token-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(255, 42, 109, 0.2);
+        }
+        
+        .stat-counter {
+            font-variant-numeric: tabular-nums;
+        }
+        
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.4;
+        }
+        
+        .marquee-container {
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        
+        .marquee-content {
+            display: inline-block;
+            animation: marquee 20s linear infinite;
+        }
+        
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        
+        .nav-link {
+            position: relative;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background: linear-gradient(90deg, #ff2a6d, #05d9e8);
+            transition: width 0.3s;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .copy-btn {
+            transition: all 0.2s;
+        }
+        
+        .copy-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .copy-btn.copied {
+            background: #10b981;
+            color: white;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Three.js Background -->
+    <div id="canvas-container"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 glass-card border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-pink-500 to-orange-400 flex items-center justify-center heartbeat">
+                        <span class="text-xl font-bold text-white">C</span>
+                    </div>
+                    <span class="text-2xl font-bold font-display tracking-tight">$CARDIO</span>
+                </div>
+                
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#thesis" class="nav-link text-sm font-medium text-gray-300 hover:text-white transition">Thesis</a>
+                    <a href="#structure" class="nav-link text-sm font-medium text-gray-300 hover:text-white transition">Tokenomics</a>
+                    <a href="#positioning" class="nav-link text-sm font-medium text-gray-300 hover:text-white transition">Positioning</a>
+                    <a href="https://t.me/Cardio_BSC" target="_blank" class="px-6 py-2.5 rounded-full bg-gradient-to-r from-pink-600 to-orange-500 text-white font-semibold hover:shadow-lg hover:shadow-pink-500/25 transition transform hover:-translate-y-0.5">
+                        Join Telegram
+                    </a>
+                </div>
+                
+                <button id="mobile-menu-btn" class="md:hidden text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden glass-card border-t border-white/10">
+            <div class="px-4 pt-2 pb-6 space-y-2">
+                <a href="#thesis" class="block px-3 py-2 text-base font-medium text-gray-300 hover:text-white">Thesis</a>
+                <a href="#structure" class="block px-3 py-2 text-base font-medium text-gray-300 hover:text-white">Tokenomics</a>
+                <a href="#positioning" class="block px-3 py-2 text-base font-medium text-gray-300 hover:text-white">Positioning</a>
+                <a href="https://t.me/Cardio_BSC" target="_blank" class="block px-3 py-2 text-base font-medium text-pink-400">Join Telegram →</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
+        <div class="absolute inset-0 grid-bg opacity-30"></div>
+        
+        <!-- Floating Images -->
+        <div class="absolute top-1/4 left-10 w-64 h-64 opacity-20 floating hidden lg:block">
+            <img src="/mnt/kimi/upload/1000489420.jpg" alt="Cardio Art" class="w-full h-full object-cover rounded-3xl blur-sm">
+        </div>
+        <div class="absolute bottom-1/4 right-10 w-64 h-64 opacity-20 floating hidden lg:block" style="animation-delay: 3s;">
+            <img src="/mnt/kimi/upload/1000489422.jpg" alt="Cardio Tech" class="w-full h-full object-cover rounded-3xl blur-sm">
+        </div>
+
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="inline-flex items-center px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-8 backdrop-blur-sm">
+                <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse mr-2"></span>
+                <span class="text-sm font-medium text-gray-300">Live on BSC Network</span>
+            </div>
+            
+            <h1 class="text-6xl md:text-8xl font-bold font-display mb-6 leading-tight">
+                <span class="block gradient-text">$CARDIO</span>
+                <span class="block text-3xl md:text-5xl mt-4 text-gray-300 font-light">Web3 Meets Medical Innovation</span>
+            </h1>
+            
+            <p class="max-w-2xl mx-auto text-lg md:text-xl text-gray-400 mb-10 leading-relaxed">
+                Positioning at the intersection of decentralized finance and healthcare. 
+                The first meme token with real-world medical narrative depth.
+            </p>
+
+            <!-- CA Box -->
+            <div class="max-w-2xl mx-auto mb-12">
+                <div class="glass-card rounded-2xl p-6 pulse-glow">
+                    <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div class="text-left flex-1 min-w-0">
+                            <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">Contract Address</p>
+                            <p class="font-mono text-sm md:text-base text-pink-400 truncate" id="ca-text">
+                                0x5edbd12b8e2fae3f3e279c2db056b54d63537777
+                            </p>
+                        </div>
+                        <button onclick="copyCA()" class="copy-btn px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold flex items-center gap-2 transition-all">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                            </svg>
+                            <span id="copy-text">Copy CA</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <a href="https://t.me/Cardio_BSC" target="_blank" class="group px-8 py-4 rounded-full bg-gradient-to-r from-pink-600 to-orange-500 text-white font-bold text-lg hover:shadow-2xl hover:shadow-pink-500/40 transition-all transform hover:-translate-y-1 flex items-center gap-2">
+                    Join Community
+                    <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                    </svg>
+                </a>
+                <button onclick="document.getElementById('thesis').scrollIntoView({behavior: 'smooth'})" class="px-8 py-4 rounded-full border-2 border-white/20 text-white font-semibold hover:bg-white/5 transition-all">
+                    Read Thesis
+                </button>
+            </div>
+
+            <!-- Stats -->
+            <div class="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-pink-500 stat-counter" data-target="3">3%</div>
+                    <div class="text-sm text-gray-500 mt-1">Buy/Sell Tax</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-orange-500 stat-counter" data-target="50">50%</div>
+                    <div class="text-sm text-gray-500 mt-1">Marketing</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-cyan-500 stat-counter" data-target="25">25%</div>
+                    <div class="text-sm text-gray-500 mt-1">Auto Burn</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-purple-500 stat-counter" data-target="25">25%</div>
+                    <div class="text-sm text-gray-500 mt-1">Liquidity</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+            </svg>
+        </div>
+    </section>
+
+    <!-- ECG Divider -->
+    <div class="w-full h-24 relative overflow-hidden">
+        <svg class="absolute w-full h-full" preserveAspectRatio="none" viewBox="0 0 1200 100">
+            <path class="ecg-line" d="M0,50 L200,50 L220,20 L240,80 L260,50 L400,50 L420,10 L440,90 L460,50 L600,50 L620,30 L640,70 L660,50 L800,50 L820,15 L840,85 L860,50 L1000,50 L1020,25 L1040,75 L1060,50 L1200,50" 
+                  stroke="url(#ecg-gradient)" stroke-width="3" fill="none"/>
+            <defs>
+                <linearGradient id="ecg-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color:#ff2a6d;stop-opacity:0" />
+                    <stop offset="50%" style="stop-color:#ff2a6d;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#05d9e8;stop-opacity:0" />
+                </linearGradient>
+            </defs>
+        </svg>
+    </div>
+
+    <!-- Investment Thesis Section -->
+    <section id="thesis" class="py-24 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <div class="order-2 lg:order-1">
+                    <div class="relative">
+                        <img src="/mnt/kimi/upload/1000489420.jpg" alt="Cardio Medical Innovation" class="rounded-3xl shadow-2xl shadow-pink-500/20 w-full">
+                        <div class="absolute -bottom-6 -right-6 w-48 h-48 bg-gradient-to-br from-pink-500 to-orange-400 rounded-2xl -z-10 opacity-50 blur-2xl"></div>
+                    </div>
+                </div>
+                
+                <div class="order-1 lg:order-2">
+                    <h2 class="text-4xl md:text-5xl font-bold font-display mb-6">
+                        Investment <span class="gradient-text">Thesis</span>
+                    </h2>
+                    
+                    <div class="space-y-6 text-gray-300 leading-relaxed">
+                        <p class="text-lg">
+                            CARDIO is positioning itself at the intersection of <span class="text-pink-400 font-semibold">web3 and medical innovation</span>. 
+                            While most meme tokens are purely narrative driven, CARDIO introduces sector alignment with real world relevance.
+                        </p>
+                        
+                        <div class="glass-card rounded-2xl p-6 border-l-4 border-pink-500">
+                            <h3 class="text-xl font-semibold text-white mb-3">Thematic Foundation</h3>
+                            <p class="text-gray-400">
+                                Focus on metabolic disorders, cardiovascular disease, neurological disorders and related health challenges 
+                                gives the project a foundation beyond speculation.
+                            </p>
+                        </div>
+                        
+                        <div class="glass-card rounded-2xl p-6 border-l-4 border-cyan-500">
+                            <h3 class="text-xl font-semibold text-white mb-3">Why This Matters</h3>
+                            <p class="text-gray-400">
+                                Healthcare remains one of the largest and most capital intensive sectors globally. 
+                                Bridging decentralized ecosystems with medical research narratives creates long term positioning potential.
+                            </p>
+                        </div>
+
+                        <div class="flex items-center gap-4 pt-4">
+                            <div class="flex -space-x-2">
+                                <div class="w-10 h-10 rounded-full bg-pink-500 flex items-center justify-center text-xs font-bold">W3</div>
+                                <div class="w-10 h-10 rounded-full bg-cyan-500 flex items-center justify-center text-xs font-bold">MD</div>
+                                <div class="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center text-xs font-bold">+</div>
+                            </div>
+                            <span class="text-sm text-gray-500">Narrative depth plus structural intent</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Token Structure Section -->
+    <section id="structure" class="py-24 relative bg-black/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold font-display mb-4">
+                    Token <span class="gradient-text">Structure</span>
+                </h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">3/3 Tax Buy/Sell designed for sustainable growth</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8 mb-16">
+                <!-- Marketing -->
+                <div class="token-card glass-card rounded-3xl p-8 text-center relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-gradient-to-br from-pink-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="relative z-10">
+                        <div class="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-pink-500 to-pink-600 flex items-center justify-center text-3xl font-bold shadow-lg shadow-pink-500/30">
+                            50%
+                        </div>
+                        <h3 class="text-2xl font-bold mb-3 text-white">Marketing</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed">
+                            Sustained exposure through strategic marketing initiatives and community building efforts.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Auto Burn -->
+                <div class="token-card glass-card rounded-3xl p-8 text-center relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-gradient-to-br from-orange-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="relative z-10">
+                        <div class="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center text-3xl font-bold shadow-lg shadow-orange-500/30">
+                            25%
+                        </div>
+                        <h3 class="text-2xl font-bold mb-3 text-white">Auto Burn</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed">
+                            Increasing scarcity through automatic burn mechanism. Deflationary tokenomics.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Liquidity -->
+                <div class="token-card glass-card rounded-3xl p-8 text-center relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-gradient-to-br from-cyan-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="relative z-10">
+                        <div class="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-cyan-500 to-cyan-600 flex items-center justify-center text-3xl font-bold shadow-lg shadow-cyan-500/30">
+                            25%
+                        </div>
+                        <h3 class="text-2xl font-bold mb-3 text-white">Liquidity</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed">
+                            Stability through liquidity allocation ensuring smooth trading experience.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Concept Flow -->
+            <div class="glass-card rounded-3xl p-8 md:p-12">
+                <h3 class="text-2xl font-bold text-center mb-10">The Concept is Simple</h3>
+                <div class="grid md:grid-cols-3 gap-8 relative">
+                    <!-- Connecting Line -->
+                    <div class="hidden md:block absolute top-1/2 left-0 w-full h-0.5 bg-gradient-to-r from-pink-500 via-orange-500 to-cyan-500 -z-10 transform -translate-y-1/2"></div>
+                    
+                    <div class="text-center relative">
+                        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-pink-500 flex items-center justify-center text-2xl font-bold border-4 border-black">1</div>
+                        <h4 class="text-lg font-semibold mb-2">Market Participation</h4>
+                        <p class="text-sm text-gray-400">Fuels ecosystem growth</p>
+                    </div>
+                    
+                    <div class="text-center relative">
+                        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-orange-500 flex items-center justify-center text-2xl font-bold border-4 border-black">2</div>
+                        <h4 class="text-lg font-semibold mb-2">Ecosystem Growth</h4>
+                        <p class="text-sm text-gray-400">Supports visibility and expansion</p>
+                    </div>
+                    
+                    <div class="text-center relative">
+                        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-cyan-500 flex items-center justify-center text-2xl font-bold border-4 border-black">3</div>
+                        <h4 class="text-lg font-semibold mb-2">Expansion</h4>
+                        <p class="text-sm text-gray-400">Strengthens long term narrative</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Market Positioning Section -->
+    <section id="positioning" class="py-24 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <div>
+                    <h2 class="text-4xl md:text-5xl font-bold font-display mb-6">
+                        Market <span class="gradient-text">Positioning</span>
+                    </h2>
+                    
+                    <div class="space-y-4 mb-8">
+                        <div class="flex items-start gap-4">
+                            <div class="w-6 h-6 rounded-full bg-pink-500/20 flex items-center justify-center flex-shrink-0 mt-1">
+                                <div class="w-2 h-2 rounded-full bg-pink-500"></div>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-white">Flap Ecosystem Launch</h4>
+                                <p class="text-sm text-gray-400">Early stage positioning within emerging ecosystem</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start gap-4">
+                            <div class="w-6 h-6 rounded-full bg-orange-500/20 flex items-center justify-center flex-shrink-0 mt-1">
+                                <div class="w-2 h-2 rounded-full bg-orange-500"></div>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-white">Early Market Cap</h4>
+                                <p class="text-sm text-gray-400">Asymmetric upside potential for early adopters</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start gap-4">
+                            <div class="w-6 h-6 rounded-full bg-cyan-500/20 flex items-center justify-center flex-shrink-0 mt-1">
+                                <div class="w-2 h-2 rounded-full bg-cyan-500"></div>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-white">Clear Sector Narrative</h4>
+                                <p class="text-sm text-gray-400">Healthcare integration at the meme layer</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start gap-4">
+                            <div class="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center flex-shrink-0 mt-1">
+                                <div class="w-2 h-2 rounded-full bg-purple-500"></div>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-white">Privacy Aligned Culture</h4>
+                                <p class="text-sm text-gray-400">Focused branding and community values</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card rounded-2xl p-6 border border-pink-500/30">
+                        <p class="text-gray-300 italic">
+                            "Web3 has seen gaming narratives, AI narratives, Meme narratives. 
+                            <span class="text-pink-400 font-semibold">Healthcare integration remains largely untapped</span> at the meme layer."
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="relative">
+                    <img src="/mnt/kimi/upload/1000489422.jpg" alt="Cardio Market Positioning" class="rounded-3xl shadow-2xl shadow-cyan-500/20 w-full">
+                    <div class="absolute -top-6 -left-6 w-48 h-48 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-2xl -z-10 opacity-50 blur-2xl"></div>
+                    
+                    <!-- Floating Badge -->
+                    <div class="absolute -bottom-4 -right-4 glass-card rounded-2xl p-4 border border-white/20 shadow-xl">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="text-sm text-gray-400">Untapped Sector</div>
+                                <div class="text-lg font-bold text-white">Healthcare</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Narrative Comparison -->
+    <section class="py-24 bg-black/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-12 font-display">Web3 Narrative <span class="gradient-text">Evolution</span></h2>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="glass-card rounded-2xl p-6 text-center opacity-50">
+                    <div class="text-3xl mb-2">🎮</div>
+                    <div class="font-semibold">Gaming</div>
+                    <div class="text-xs text-gray-500 mt-1">Saturated</div>
+                </div>
+                <div class="glass-card rounded-2xl p-6 text-center opacity-50">
+                    <div class="text-3xl mb-2">🤖</div>
+                    <div class="font-semibold">AI</div>
+                    <div class="text-xs text-gray-500 mt-1">Saturated</div>
+                </div>
+                <div class="glass-card rounded-2xl p-6 text-center opacity-50">
+                    <div class="text-3xl mb-2">🐸</div>
+                    <div class="font-semibold">Memes</div>
+                    <div class="text-xs text-gray-500 mt-1">Saturated</div>
+                </div>
+                <div class="glass-card rounded-2xl p-6 text-center gradient-border transform scale-105">
+                    <div class="text-3xl mb-2">❤️</div>
+                    <div class="font-semibold text-pink-400">Healthcare</div>
+                    <div class="text-xs text-pink-400/70 mt-1 font-bold">UNTAPPED</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Disclaimer -->
+    <section class="py-16 border-t border-white/10">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <div class="glass-card rounded-2xl p-8 border border-yellow-500/20">
+                <div class="w-12 h-12 mx-auto mb-4 rounded-full bg-yellow-500/20 flex items-center justify-center">
+                    <svg class="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold text-yellow-500 mb-2">Risk Disclaimer</h3>
+                <p class="text-gray-400 text-sm leading-relaxed">
+                    Conduct your own research. Assess risk tolerance. This is not financial advice. 
+                    Cryptocurrency may be unregulated in your jurisdiction. The value of cryptocurrencies may go down as well as up. 
+                    Profits may be subject to capital gains or other taxes applicable in your jurisdiction.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 border-t border-white/10 bg-black/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-pink-500 to-orange-400 flex items-center justify-center">
+                        <span class="text-xl font-bold text-white">C</span>
+                    </div>
+                    <span class="text-2xl font-bold font-display">$CARDIO</span>
+                </div>
+                
+                <div class="flex gap-6">
+                    <a href="https://t.me/Cardio_BSC" target="_blank" class="w-10 h-10 rounded-full glass-card flex items-center justify-center hover:bg-pink-500/20 transition group">
+                        <svg class="w-5 h-5 text-gray-400 group-hover:text-pink-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                        </svg>
+                    </a>
+                    <a href="#" class="w-10 h-10 rounded-full glass-card flex items-center justify-center hover:bg-blue-500/20 transition group">
+                        <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                        </svg>
+                    </a>
+                </div>
+                
+                <div class="text-sm text-gray-500 font-mono">
+                    CA: 0x5ed...7777
+                </div>
+            </div>
+            
+            <div class="mt-8 pt-8 border-t border-white/5 text-center text-sm text-gray-600">
+                <p>&copy; 2026 $CARDIO. All rights reserved. Built with ❤️ on BSC.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Copy CA Function
+        function copyCA() {
+            const ca = '0x5edbd12b8e2fae3f3e279c2db056b54d63537777';
+            navigator.clipboard.writeText(ca).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                const text = document.getElementById('copy-text');
+                btn.classList.add('copied');
+                text.textContent = 'Copied!';
+                setTimeout(() => {
+                    btn.classList.remove('copied');
+                    text.textContent = 'Copy CA';
+                }, 2000);
+            });
+        }
+
+        // Mobile Menu Toggle
+        document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        });
+
+        // Three.js Background Animation
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        // Create particles
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = 1500;
+        const posArray = new Float32Array(particlesCount * 3);
+
+        for(let i = 0; i < particlesCount * 3; i++) {
+            posArray[i] = (Math.random() - 0.5) * 50;
+        }
+
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        
+        const particlesMaterial = new THREE.PointsMaterial({
+            size: 0.02,
+            color: 0xff2a6d,
+            transparent: true,
+            opacity: 0.8,
+            blending: THREE.AdditiveBlending
+        });
+
+        const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particlesMesh);
+
+        camera.position.z = 5;
+
+        // Mouse interaction
+        let mouseX = 0;
+        let mouseY = 0;
+
+        document.addEventListener('mousemove', (event) => {
+            mouseX = event.clientX / window.innerWidth - 0.5;
+            mouseY = event.clientY / window.innerHeight - 0.5;
+        });
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            particlesMesh.rotation.y += 0.001;
+            particlesMesh.rotation.x += 0.001;
+            
+            // Mouse parallax
+            particlesMesh.rotation.x += mouseY * 0.05;
+            particlesMesh.rotation.y += mouseX * 0.05;
+            
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Resize handler
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // GSAP Animations
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Animate stats on scroll
+        gsap.utils.toArray('.stat-counter').forEach(counter => {
+            const target = parseInt(counter.getAttribute('data-target'));
+            gsap.to(counter, {
+                innerHTML: target,
+                duration: 2,
+                snap: { innerHTML: 1 },
+                scrollTrigger: {
+                    trigger: counter,
+                    start: "top 80%",
+                    once: true
+                }
+            });
+        });
+
+        // Fade in sections
+        gsap.utils.toArray('section').forEach(section => {
+            gsap.from(section, {
+                opacity: 0,
+                y: 50,
+                duration: 1,
+                scrollTrigger: {
+                    trigger: section,
+                    start: "top 80%",
+                    toggleActions: "play none none reverse"
+                }
+            });
+        });
+
+        // Smooth scroll for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    // Close mobile menu if open
+                    document.getElementById('mobile-menu').classList.add('hidden');
+                }
+            });
+        });
+
+        // Add parallax effect to images
+        document.addEventListener('mousemove', (e) => {
+            const images = document.querySelectorAll('.floating');
+            const x = (window.innerWidth - e.pageX) / 50;
+            const y = (window.innerHeight - e.pageY) / 50;
+            
+            images.forEach((img, index) => {
+                const speed = (index + 1) * 0.5;
+                img.style.transform = `translateX(${x * speed}px) translateY(${y * speed}px)`;
+            });
+        });
+    </script>
+</body>
+</html>
