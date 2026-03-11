@@ -1,909 +1,1375 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>$CARDIO | Web3 Meets Medical Innovation</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Jumpy - Mobile Runner</title>
     <style>
-        :root {
-            --primary: #39ff14;
-            --secondary: #05d9e8;
-            --accent: #d1f7ff;
-            --dark: #0a0a0f;
-            --darker: #050508;
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
         
         body {
-            font-family: 'Inter', sans-serif;
-            background: var(--darker);
-            color: white;
-            overflow-x: hidden;
-        }
-        
-        h1, h2, h3, .font-display {
-            font-family: 'Space Grotesk', sans-serif;
-        }
-        
-        .gradient-text {
-            background: linear-gradient(135deg, #39ff14 0%, #05d9e8 50%, #00ff88 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .neon-glow {
-            box-shadow: 0 0 20px rgba(57, 255, 20, 0.5), 0 0 40px rgba(57, 255, 20, 0.3);
-        }
-        
-        .gradient-border {
-            position: relative;
-            background: linear-gradient(var(--darker), var(--darker)) padding-box,
-                        linear-gradient(135deg, #39ff14, #05d9e8) border-box;
-            border: 2px solid transparent;
-        }
-        
-        .glass-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .pulse-glow {
-            animation: pulse-glow 3s ease-in-out infinite;
-        }
-        
-        @keyframes pulse-glow {
-            0%, 100% { box-shadow: 0 0 20px rgba(57, 255, 20, 0.3); }
-            50% { box-shadow: 0 0 40px rgba(57, 255, 20, 0.6); }
-        }
-        
-        .heartbeat {
-            animation: heartbeat 2s ease-in-out infinite;
-        }
-        
-        @keyframes heartbeat {
-            0%, 100% { transform: scale(1); }
-            10% { transform: scale(1.05); }
-            20% { transform: scale(1); }
-            30% { transform: scale(1.05); }
-            40% { transform: scale(1); }
-        }
-        
-        .floating {
-            animation: floating 6s ease-in-out infinite;
-        }
-        
-        @keyframes floating {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-        }
-        
-        .grid-bg {
-            background-image: 
-                linear-gradient(rgba(57, 255, 20, 0.1) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(57, 255, 20, 0.1) 1px, transparent 1px);
-            background-size: 50px 50px;
-        }
-        
-        .ecg-line {
-            stroke-dasharray: 1000;
-            stroke-dashoffset: 1000;
-            animation: draw 3s ease-in-out infinite;
-        }
-        
-        @keyframes draw {
-            to { stroke-dashoffset: 0; }
-        }
-        
-        .token-card {
-            transition: all 0.3s ease;
-        }
-        
-        .token-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(57, 255, 20, 0.2);
-        }
-        
-        .stat-counter {
-            font-variant-numeric: tabular-nums;
-        }
-        
-        #canvas-container {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(180deg, #87CEEB 0%, #B8E6F0 50%, #90EE90 50%, #7FDD7F 100%);
+            min-height: 100vh;
+            overflow: hidden;
             position: fixed;
-            top: 0;
-            left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1;
-            opacity: 0.4;
         }
         
-        .nav-link {
-            position: relative;
-        }
-        
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: -4px;
-            left: 0;
-            background: linear-gradient(90deg, #39ff14, #05d9e8);
-            transition: width 0.3s;
-        }
-        
-        .nav-link:hover::after {
+        /* Mobile Container */
+        .mobile-container {
             width: 100%;
+            height: 100%;
+            max-width: 430px;
+            margin: 0 auto;
+            position: relative;
+            background: linear-gradient(180deg, #87CEEB 0%, #B8E6F0 40%, #90EE90 40%, #7FDD7F 100%);
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(0,0,0,0.2);
         }
         
-        .copy-btn {
-            transition: all 0.2s;
+        /* Header */
+        .game-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 100%);
         }
         
-        .copy-btn:active {
+        .logo {
+            font-family: 'Fredoka One', cursive;
+            font-size: 28px;
+            color: #FF6B6B;
+            text-shadow: 3px 3px 0px #FFE66D;
+            letter-spacing: 1px;
+        }
+        
+        .wallet-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 10px 16px;
+            border-radius: 25px;
+            color: white;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
+            font-size: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transition: transform 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .wallet-btn:active {
             transform: scale(0.95);
         }
         
-        .copy-btn.copied {
-            background: #39ff14;
-            color: black;
-        }
-
-        .social-btn {
-            transition: all 0.3s ease;
+        .wallet-btn.connected {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
         }
         
-        .social-btn:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(57, 255, 20, 0.3);
+        /* Game Canvas */
+        #gameCanvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            touch-action: none;
         }
-
-        .whitepaper-card {
-            background: linear-gradient(135deg, rgba(57, 255, 20, 0.1) 0%, rgba(5, 217, 232, 0.1) 100%);
-            border: 1px solid rgba(57, 255, 20, 0.3);
+        
+        /* Touch Controls */
+        .touch-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 200px;
+            z-index: 50;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            padding-bottom: 40px;
+            pointer-events: none;
+        }
+        
+        .jump-btn {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            border: 4px solid rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            pointer-events: auto;
+            user-select: none;
+            -webkit-user-select: none;
+            transition: transform 0.1s, background 0.1s;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+        
+        .jump-btn:active {
+            transform: scale(0.9);
+            background: rgba(255, 255, 255, 0.5);
+        }
+        
+        .jump-icon {
+            font-size: 40px;
+            margin-bottom: 5px;
+        }
+        
+        .jump-text {
+            color: white;
+            font-weight: 800;
+            font-size: 14px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        /* HUD */
+        .hud {
+            position: absolute;
+            top: 80px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            z-index: 90;
+            pointer-events: none;
+        }
+        
+        .hud-item {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 12px 18px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 80px;
+        }
+        
+        .hud-label {
+            font-size: 11px;
+            color: #888;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .hud-value {
+            font-family: 'Fredoka One', cursive;
+            font-size: 24px;
+            color: #333;
+            margin-top: 2px;
+        }
+        
+        .hud-tokens {
+            color: #FFD93D;
+            text-shadow: 1px 1px 0px rgba(0,0,0,0.1);
+        }
+        
+        /* NFT Badge */
+        .nft-badge {
+            position: absolute;
+            top: 80px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 10px 15px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            z-index: 90;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 3px solid;
+        }
+        
+        .nft-icon {
+            font-size: 24px;
+        }
+        
+        .nft-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .nft-name {
+            font-size: 11px;
+            font-weight: 800;
+            color: #666;
+        }
+        
+        .nft-multiplier {
+            font-family: 'Fredoka One', cursive;
+            font-size: 16px;
+        }
+        
+        /* Modals */
+        .modal {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(10px);
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            overflow-y: auto;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 30px;
+            padding: 30px 25px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .modal-title {
+            font-family: 'Fredoka One', cursive;
+            font-size: 28px;
+            color: #FF6B6B;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .modal-subtitle {
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+        
+        /* NFT Cards */
+        .nft-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .nft-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 20px;
+            padding: 20px 15px;
+            text-align: center;
+            border: 4px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nft-card.selected {
+            border-color: #FF6B6B;
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+        }
+        
+        .nft-card.tier-1 { background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%); }
+        .nft-card.tier-2 { background: linear-gradient(135deg, #dfe6e9 0%, #b2bec3 100%); }
+        .nft-card.tier-3 { background: linear-gradient(135deg, #fab1a0 0%, #e17055 100%); }
+        .nft-card.tier-4 { background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%); }
+        .nft-card.tier-5 { background: linear-gradient(135deg, #55efc4 0%, #00b894 100%); }
+        
+        .card-icon {
+            font-size: 40px;
+            margin-bottom: 8px;
+        }
+        
+        .card-tier {
+            font-family: 'Fredoka One', cursive;
+            font-size: 14px;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+            margin-bottom: 5px;
+        }
+        
+        .card-price {
+            background: rgba(255,255,255,0.9);
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-weight: 800;
+            font-size: 13px;
+            color: #333;
+            display: inline-block;
+            margin-bottom: 5px;
+        }
+        
+        .card-multiplier {
+            font-size: 12px;
+            color: white;
+            font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+        
+        .action-btn {
+            width: 100%;
+            padding: 18px;
+            border: none;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #FF6B6B 0%, #EE5A6F 100%);
+            color: white;
+            font-family: 'Fredoka One', cursive;
+            font-size: 18px;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.4);
+            transition: transform 0.2s;
+            margin-top: 10px;
+        }
+        
+        .action-btn:active {
+            transform: scale(0.98);
+        }
+        
+        .action-btn:disabled {
+            background: #ccc;
+            box-shadow: none;
+        }
+        
+        /* Game Over Screen */
+        .game-over-stats {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .trophy {
+            font-size: 60px;
+            margin-bottom: 15px;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .stat-row {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+        
+        .stat-box {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-radius: 15px;
+            min-width: 100px;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #888;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        
+        .stat-value {
+            font-family: 'Fredoka One', cursive;
+            font-size: 28px;
+            color: #333;
+            margin-top: 5px;
+        }
+        
+        .token-value {
+            color: #FFD93D;
+        }
+        
+        .cooldown-box {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            padding: 20px;
+            border-radius: 20px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .cooldown-title {
+            font-weight: 800;
+            color: #d63031;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .cooldown-timer {
+            font-family: 'Fredoka One', cursive;
+            font-size: 24px;
+            color: #2d3436;
+        }
+        
+        .cooldown-desc {
+            font-size: 12px;
+            color: #636e72;
+            margin-top: 8px;
+        }
+        
+        /* Withdrawal Panel */
+        .withdrawal-float {
+            position: absolute;
+            bottom: 220px;
+            left: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 25px;
+            padding: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            z-index: 80;
+            display: none;
+            border: 3px solid #FFD93D;
+        }
+        
+        .withdrawal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .withdrawal-label {
+            font-size: 12px;
+            color: #888;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        
+        .withdrawal-amount {
+            font-family: 'Fredoka One', cursive;
+            font-size: 32px;
+            color: #FFD93D;
+        }
+        
+        .withdraw-btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 15px;
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+            font-family: 'Fredoka One', cursive;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 184, 148, 0.3);
+            transition: all 0.3s;
+        }
+        
+        .withdraw-btn:disabled {
+            background: #b2bec3;
+            box-shadow: none;
+        }
+        
+        .withdraw-btn.ready {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        .lock-icon {
+            font-size: 20px;
+            margin-right: 8px;
+        }
+        
+        /* Wallet Connection Screen */
+        .connect-screen {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .mascot-welcome {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: wave 2s infinite;
+            display: inline-block;
+        }
+        
+        @keyframes wave {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-10deg); }
+            75% { transform: rotate(10deg); }
+        }
+        
+        .welcome-text {
+            font-family: 'Fredoka One', cursive;
+            font-size: 32px;
+            color: #FF6B6B;
+            margin-bottom: 10px;
+        }
+        
+        .welcome-sub {
+            color: #888;
+            font-size: 16px;
+            margin-bottom: 40px;
+            line-height: 1.5;
+        }
+        
+        .connect-wallet-btn {
+            width: 100%;
+            padding: 20px;
+            border: none;
+            border-radius: 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-family: 'Fredoka One', cursive;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            transition: transform 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .connect-wallet-btn:active {
+            transform: scale(0.98);
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #ddd;
+            border-radius: 3px;
         }
     </style>
 </head>
-<body class="antialiased">
-
-    <!-- Three.js Background -->
-    <div id="canvas-container"></div>
-
-    <!-- Navigation -->
-    <nav class="fixed top-0 w-full z-50 glass-card border-b border-white/10">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-20">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-400 to-cyan-400 flex items-center justify-center heartbeat neon-glow">
-                        <span class="text-xl font-bold text-black">C</span>
+<body>
+    <div class="mobile-container">
+        <!-- Header -->
+        <div class="game-header">
+            <div class="logo">🐰 Jumpy</div>
+            <button class="wallet-btn" id="walletBtn" onclick="toggleWallet()">
+                <span>🔗</span> Connect
+            </button>
+        </div>
+        
+        <!-- Game Canvas -->
+        <canvas id="gameCanvas"></canvas>
+        
+        <!-- HUD -->
+        <div class="hud" id="gameHUD" style="display: none;">
+            <div class="hud-item">
+                <span class="hud-label">Score</span>
+                <span class="hud-value" id="scoreDisplay">0</span>
+            </div>
+            <div class="hud-item">
+                <span class="hud-label">Tokens</span>
+                <span class="hud-value hud-tokens" id="tokenDisplay">0</span>
+            </div>
+        </div>
+        
+        <!-- NFT Badge -->
+        <div class="nft-badge" id="nftBadge" style="display: none;">
+            <span class="nft-icon" id="nftBadgeIcon">🥉</span>
+            <div class="nft-info">
+                <span class="nft-name" id="nftBadgeName">Common</span>
+                <span class="nft-multiplier" id="nftBadgeMult" style="color: #55efc4;">1.5x</span>
+            </div>
+        </div>
+        
+        <!-- Touch Controls -->
+        <div class="touch-controls" id="touchControls" style="display: none;">
+            <div class="jump-btn" id="jumpBtn" ontouchstart="handleJump(event)" onclick="handleJump(event)">
+                <span class="jump-icon">⬆️</span>
+                <span class="jump-text">JUMP</span>
+            </div>
+        </div>
+        
+        <!-- Withdrawal Panel -->
+        <div class="withdrawal-float" id="withdrawalPanel">
+            <div class="withdrawal-header">
+                <div>
+                    <div class="withdrawal-label">Pending Rewards</div>
+                    <div class="withdrawal-amount" id="pendingAmount">0 RUN</div>
+                </div>
+                <span style="font-size: 30px;">🪙</span>
+            </div>
+            <button class="withdraw-btn" id="withdrawBtn" onclick="withdrawTokens()" disabled>
+                <span class="lock-icon">🔒</span>Locked (15 days)
+            </button>
+        </div>
+        
+        <!-- Wallet Connection Modal -->
+        <div class="modal" id="walletModal">
+            <div class="connect-screen">
+                <div class="mascot-welcome">🐰</div>
+                <div class="welcome-text">Welcome to Jumpy!</div>
+                <div class="welcome-sub">
+                    Connect your wallet to start earning<br>
+                    $RUN tokens while you play
+                </div>
+                <button class="connect-wallet-btn" onclick="connectWallet()">
+                    <span>🔗</span> Connect Wallet
+                </button>
+                <div style="margin-top: 30px; font-size: 12px; color: #b2bec3;">
+                    Powered by BNB Chain
+                </div>
+            </div>
+        </div>
+        
+        <!-- NFT Selection Modal -->
+        <div class="modal hidden" id="nftModal">
+            <div class="modal-content">
+                <div class="modal-title">Choose Your Buddy! 🐰</div>
+                <div class="modal-subtitle">Select an NFT pass to unlock rewards</div>
+                
+                <div class="nft-grid">
+                    <div class="nft-card tier-1" onclick="selectNFT(1)">
+                        <div class="card-icon">👑</div>
+                        <div class="card-tier">Legendary</div>
+                        <div class="card-price">0.105 BNB</div>
+                        <div class="card-multiplier">5x Rewards</div>
                     </div>
-                    <span class="text-2xl font-bold font-display tracking-tight text-white">$CARDIO</span>
+                    
+                    <div class="nft-card tier-2" onclick="selectNFT(2)">
+                        <div class="card-icon">💎</div>
+                        <div class="card-tier">Epic</div>
+                        <div class="card-price">0.085 BNB</div>
+                        <div class="card-multiplier">4x Rewards</div>
+                    </div>
+                    
+                    <div class="nft-card tier-3" onclick="selectNFT(3)">
+                        <div class="card-icon">🏆</div>
+                        <div class="card-tier">Rare</div>
+                        <div class="card-price">0.065 BNB</div>
+                        <div class="card-multiplier">3x Rewards</div>
+                    </div>
+                    
+                    <div class="nft-card tier-4" onclick="selectNFT(4)">
+                        <div class="card-icon">🥈</div>
+                        <div class="card-tier">Uncommon</div>
+                        <div class="card-price">0.045 BNB</div>
+                        <div class="card-multiplier">2x Rewards</div>
+                    </div>
+                    
+                    <div class="nft-card tier-5" onclick="selectNFT(5)">
+                        <div class="card-icon">🥉</div>
+                        <div class="card-tier">Common</div>
+                        <div class="card-price">0.025 BNB</div>
+                        <div class="card-multiplier">1.5x Rewards</div>
+                    </div>
                 </div>
                 
-                <div class="hidden md:flex items-center space-x-8">
-                    <a href="#thesis" class="nav-link text-sm font-medium text-gray-300 hover:text-white transition">Thesis</a>
-                    <a href="#structure" class="nav-link text-sm font-medium text-gray-300 hover:text-white transition">Tokenomics</a>
-                    <a href="#positioning" class="nav-link text-sm font-medium text-gray-300 hover:text-white transition">Positioning</a>
-                    <a href="#whitepaper" class="nav-link text-sm font-medium text-gray-300 hover:text-white transition">Whitepaper</a>
-                    <a href="https://t.me/Cardio_BSC" target="_blank" class="px-6 py-2.5 rounded-full bg-gradient-to-r from-green-500 to-cyan-500 text-black font-bold hover:shadow-lg hover:shadow-green-500/25 transition transform hover:-translate-y-0.5">
-                        Join Telegram
-                    </a>
-                </div>
-                
-                <button id="mobile-menu-btn" class="md:hidden text-white">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                    </svg>
+                <button class="action-btn" id="startBtn" onclick="startGame()" disabled>
+                    Start Running! 🎮
                 </button>
             </div>
         </div>
         
-        <!-- Mobile Menu -->
-        <div id="mobile-menu" class="hidden md:hidden glass-card border-t border-white/10">
-            <div class="px-4 pt-2 pb-6 space-y-2">
-                <a href="#thesis" class="block px-3 py-2 text-base font-medium text-gray-300 hover:text-white">Thesis</a>
-                <a href="#structure" class="block px-3 py-2 text-base font-medium text-gray-300 hover:text-white">Tokenomics</a>
-                <a href="#positioning" class="block px-3 py-2 text-base font-medium text-gray-300 hover:text-white">Positioning</a>
-                <a href="#whitepaper" class="block px-3 py-2 text-base font-medium text-gray-300 hover:text-white">Whitepaper</a>
-                <a href="https://t.me/Cardio_BSC" target="_blank" class="block px-3 py-2 text-base font-medium text-green-400">Join Telegram →</a>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <section class="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
-        <div class="absolute inset-0 grid-bg opacity-30"></div>
-        
-        <!-- Floating Images -->
-        <div class="absolute top-1/4 left-10 w-64 h-64 opacity-20 floating hidden lg:block">
-            <img src="/mnt/kimi/upload/1000489420.jpg" alt="Cardio Art" class="w-full h-full object-cover rounded-3xl blur-sm">
-        </div>
-        <div class="absolute bottom-1/4 right-10 w-64 h-64 opacity-20 floating hidden lg:block" style="animation-delay: 3s;">
-            <img src="/mnt/kimi/upload/1000489422.jpg" alt="Cardio Tech" class="w-full h-full object-cover rounded-3xl blur-sm">
-        </div>
-
-        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <div class="inline-flex items-center px-4 py-2 rounded-full bg-white/5 border border-green-500/30 mb-8 backdrop-blur-sm">
-                <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse mr-2"></span>
-                <span class="text-sm font-medium text-gray-300">Live on BSC Network</span>
-            </div>
-            
-            <h1 class="text-6xl md:text-8xl font-bold font-display mb-6 leading-tight">
-                <span class="block gradient-text">$CARDIO</span>
-                <span class="block text-3xl md:text-5xl mt-4 text-gray-300 font-light">Web3 Meets Medical Innovation</span>
-            </h1>
-            
-            <p class="max-w-2xl mx-auto text-lg md:text-xl text-gray-400 mb-10 leading-relaxed">
-                Positioning at the intersection of decentralized finance and healthcare. 
-                The first meme token with real-world medical narrative depth.
-            </p>
-
-            <!-- CA Box -->
-            <div class="max-w-2xl mx-auto mb-12">
-                <div class="glass-card rounded-2xl p-6 pulse-glow border border-green-500/20">
-                    <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-                        <div class="text-left flex-1 min-w-0">
-                            <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">Contract Address</p>
-                            <p class="font-mono text-sm md:text-base text-green-400 truncate" id="ca-text">
-                                0x5edbd12b8e2fae3f3e279c2db056b54d63537777
-                            </p>
+        <!-- Game Over Modal -->
+        <div class="modal hidden" id="gameOverModal">
+            <div class="modal-content">
+                <div class="trophy">🏆</div>
+                <div class="modal-title">Great Run! 🎉</div>
+                
+                <div class="game-over-stats">
+                    <div class="stat-row">
+                        <div class="stat-box">
+                            <div class="stat-label">Score</div>
+                            <div class="stat-value" id="finalScore">0</div>
                         </div>
-                        <button onclick="copyCA()" class="copy-btn px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold flex items-center gap-2 transition-all">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-                            </svg>
-                            <span id="copy-text">Copy CA</span>
-                        </button>
+                        <div class="stat-box">
+                            <div class="stat-label">Tokens</div>
+                            <div class="stat-value token-value" id="finalTokens">0</div>
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <a href="https://t.me/Cardio_BSC" target="_blank" class="group px-8 py-4 rounded-full bg-gradient-to-r from-green-500 to-cyan-500 text-black font-bold text-lg hover:shadow-2xl hover:shadow-green-500/40 transition-all transform hover:-translate-y-1 flex items-center gap-2">
-                    Join Community
-                    <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-                    </svg>
-                </a>
-                <button onclick="document.getElementById('whitepaper').scrollIntoView({behavior: 'smooth'})" class="px-8 py-4 rounded-full border-2 border-green-500/50 text-white font-semibold hover:bg-green-500/10 transition-all flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                    </svg>
-                    Whitepaper
+                
+                <div class="cooldown-box">
+                    <div class="cooldown-title">
+                        <span>⏰</span> Reward Lock Active
+                    </div>
+                    <div class="cooldown-timer" id="cooldownTimer">15d 00h 00m</div>
+                    <div class="cooldown-desc">
+                        Your earnings are secured! Return in 15 days to withdraw your $RUN tokens.
+                    </div>
+                </div>
+                
+                <button class="action-btn" onclick="playAgain()" style="margin-top: 20px;">
+                    Play Again 🔄
                 </button>
             </div>
-
-            <!-- Social Links Hero -->
-            <div class="mt-8 flex justify-center gap-4">
-                <a href="https://x.com/Cardio_BSC" target="_blank" class="social-btn w-12 h-12 rounded-full glass-card flex items-center justify-center border border-white/10 hover:border-green-500/50 hover:bg-green-500/10">
-                    <svg class="w-5 h-5 text-gray-300 hover:text-white" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                    </svg>
-                </a>
-                <a href="http://tiktok.com/@cardio_bsc" target="_blank" class="social-btn w-12 h-12 rounded-full glass-card flex items-center justify-center border border-white/10 hover:border-green-500/50 hover:bg-green-500/10">
-                    <svg class="w-5 h-5 text-gray-300 hover:text-white" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/>
-                    </svg>
-                </a>
-                <a href="https://t.me/Cardio_BSC" target="_blank" class="social-btn w-12 h-12 rounded-full glass-card flex items-center justify-center border border-white/10 hover:border-green-500/50 hover:bg-green-500/10">
-                    <svg class="w-5 h-5 text-gray-300 hover:text-white" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
-                    </svg>
-                </a>
-            </div>
-
-            <!-- Stats -->
-            <div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
-                <div class="text-center">
-                    <div class="text-3xl font-bold text-green-400 stat-counter" data-target="3">3%</div>
-                    <div class="text-sm text-gray-500 mt-1">Buy/Sell Tax</div>
-                </div>
-                <div class="text-center">
-                    <div class="text-3xl font-bold text-cyan-400 stat-counter" data-target="50">50%</div>
-                    <div class="text-sm text-gray-500 mt-1">Marketing</div>
-                </div>
-                <div class="text-center">
-                    <div class="text-3xl font-bold text-green-300 stat-counter" data-target="25">25%</div>
-                    <div class="text-sm text-gray-500 mt-1">Auto Burn</div>
-                </div>
-                <div class="text-center">
-                    <div class="text-3xl font-bold text-teal-400 stat-counter" data-target="25">25%</div>
-                    <div class="text-sm text-gray-500 mt-1">Liquidity</div>
-                </div>
-            </div>
         </div>
-
-        <!-- Scroll Indicator -->
-        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
-            <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
-            </svg>
-        </div>
-    </section>
-
-    <!-- ECG Divider -->
-    <div class="w-full h-24 relative overflow-hidden">
-        <svg class="absolute w-full h-full" preserveAspectRatio="none" viewBox="0 0 1200 100">
-            <path class="ecg-line" d="M0,50 L200,50 L220,20 L240,80 L260,50 L400,50 L420,10 L440,90 L460,50 L600,50 L620,30 L640,70 L660,50 L800,50 L820,15 L840,85 L860,50 L1000,50 L1020,25 L1040,75 L1060,50 L1200,50" 
-                  stroke="url(#ecg-gradient)" stroke-width="3" fill="none"/>
-            <defs>
-                <linearGradient id="ecg-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" style="stop-color:#39ff14;stop-opacity:0" />
-                    <stop offset="50%" style="stop-color:#39ff14;stop-opacity:1" />
-                    <stop offset="100%" style="stop-color:#05d9e8;stop-opacity:0" />
-                </linearGradient>
-            </defs>
-        </svg>
     </div>
 
-    <!-- Investment Thesis Section -->
-    <section id="thesis" class="py-24 relative">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid lg:grid-cols-2 gap-16 items-center">
-                <div class="order-2 lg:order-1">
-                    <div class="relative">
-                        <img src="https://github.com/bnbfamr/cardiobsc/blob/main/IMG-20260304-WA0037.jpg" alt="Cardio Medical Innovation" class="rounded-3xl shadow-2xl shadow-green-500/20 w-full">
-                        <div class="absolute -bottom-6 -right-6 w-48 h-48 bg-gradient-to-br from-green-500 to-cyan-400 rounded-2xl -z-10 opacity-50 blur-2xl"></div>
-                    </div>
-                </div>
-                
-                <div class="order-1 lg:order-2">
-                    <h2 class="text-4xl md:text-5xl font-bold font-display mb-6">
-                        Investment <span class="gradient-text">Thesis</span>
-                    </h2>
-                    
-                    <div class="space-y-6 text-gray-300 leading-relaxed">
-                        <p class="text-lg">
-                            CARDIO is positioning itself at the intersection of <span class="text-green-400 font-semibold">web3 and medical innovation</span>. 
-                            While most meme tokens are purely narrative driven, CARDIO introduces sector alignment with real world relevance.
-                        </p>
-                        
-                        <div class="glass-card rounded-2xl p-6 border-l-4 border-green-500">
-                            <h3 class="text-xl font-semibold text-white mb-3">Thematic Foundation</h3>
-                            <p class="text-gray-400">
-                                Focus on metabolic disorders, cardiovascular disease, neurological disorders and related health challenges 
-                                gives the project a foundation beyond speculation.
-                            </p>
-                        </div>
-                        
-                        <div class="glass-card rounded-2xl p-6 border-l-4 border-cyan-500">
-                            <h3 class="text-xl font-semibold text-white mb-3">Why This Matters</h3>
-                            <p class="text-gray-400">
-                                Healthcare remains one of the largest and most capital intensive sectors globally. 
-                                Bridging decentralized ecosystems with medical research narratives creates long term positioning potential.
-                            </p>
-                        </div>
-
-                        <div class="flex items-center gap-4 pt-4">
-                            <div class="flex -space-x-2">
-                                <div class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-xs font-bold text-black">W3</div>
-                                <div class="w-10 h-10 rounded-full bg-cyan-500 flex items-center justify-center text-xs font-bold text-black">MD</div>
-                                <div class="w-10 h-10 rounded-full bg-teal-500 flex items-center justify-center text-xs font-bold text-black">+</div>
-                            </div>
-                            <span class="text-sm text-gray-500">Narrative depth plus structural intent</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Token Structure Section -->
-    <section id="structure" class="py-24 relative bg-black/20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl md:text-5xl font-bold font-display mb-4">
-                    Token <span class="gradient-text">Structure</span>
-                </h2>
-                <p class="text-gray-400 max-w-2xl mx-auto">3/3 Tax Buy/Sell designed for sustainable growth</p>
-            </div>
-
-            <div class="grid md:grid-cols-3 gap-8 mb-16">
-                <!-- Marketing -->
-                <div class="token-card glass-card rounded-3xl p-8 text-center relative overflow-hidden group">
-                    <div class="absolute inset-0 bg-gradient-to-br from-green-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div class="relative z-10">
-                        <div class="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center text-3xl font-bold text-black shadow-lg shadow-green-500/30">
-                            50%
-                        </div>
-                        <h3 class="text-2xl font-bold mb-3 text-white">Marketing</h3>
-                        <p class="text-gray-400 text-sm leading-relaxed">
-                            Sustained exposure through strategic marketing initiatives and community building efforts.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Auto Burn -->
-                <div class="token-card glass-card rounded-3xl p-8 text-center relative overflow-hidden group">
-                    <div class="absolute inset-0 bg-gradient-to-br from-teal-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div class="relative z-10">
-                        <div class="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center text-3xl font-bold text-black shadow-lg shadow-teal-500/30">
-                            25%
-                        </div>
-                        <h3 class="text-2xl font-bold mb-3 text-white">Auto Burn</h3>
-                        <p class="text-gray-400 text-sm leading-relaxed">
-                            Increasing scarcity through automatic burn mechanism. Deflationary tokenomics.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Liquidity -->
-                <div class="token-card glass-card rounded-3xl p-8 text-center relative overflow-hidden group">
-                    <div class="absolute inset-0 bg-gradient-to-br from-cyan-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div class="relative z-10">
-                        <div class="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center text-3xl font-bold text-black shadow-lg shadow-cyan-500/30">
-                            25%
-                        </div>
-                        <h3 class="text-2xl font-bold mb-3 text-white">Liquidity</h3>
-                        <p class="text-gray-400 text-sm leading-relaxed">
-                            Stability through liquidity allocation ensuring smooth trading experience.
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Concept Flow -->
-            <div class="glass-card rounded-3xl p-8 md:p-12">
-                <h3 class="text-2xl font-bold text-center mb-10">The Concept is Simple</h3>
-                <div class="grid md:grid-cols-3 gap-8 relative">
-                    <!-- Connecting Line -->
-                    <div class="hidden md:block absolute top-1/2 left-0 w-full h-0.5 bg-gradient-to-r from-green-500 via-teal-500 to-cyan-500 -z-10 transform -translate-y-1/2"></div>
-                    
-                    <div class="text-center relative">
-                        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-green-500 flex items-center justify-center text-2xl font-bold text-black border-4 border-black">1</div>
-                        <h4 class="text-lg font-semibold mb-2">Market Participation</h4>
-                        <p class="text-sm text-gray-400">Fuels ecosystem growth</p>
-                    </div>
-                    
-                    <div class="text-center relative">
-                        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-teal-500 flex items-center justify-center text-2xl font-bold text-black border-4 border-black">2</div>
-                        <h4 class="text-lg font-semibold mb-2">Ecosystem Growth</h4>
-                        <p class="text-sm text-gray-400">Supports visibility and expansion</p>
-                    </div>
-                    
-                    <div class="text-center relative">
-                        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-cyan-500 flex items-center justify-center text-2xl font-bold text-black border-4 border-black">3</div>
-                        <h4 class="text-lg font-semibold mb-2">Expansion</h4>
-                        <p class="text-sm text-gray-400">Strengthens long term narrative</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Market Positioning Section -->
-    <section id="positioning" class="py-24 relative">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid lg:grid-cols-2 gap-16 items-center">
-                <div>
-                    <h2 class="text-4xl md:text-5xl font-bold font-display mb-6">
-                        Market <span class="gradient-text">Positioning</span>
-                    </h2>
-                    
-                    <div class="space-y-4 mb-8">
-                        <div class="flex items-start gap-4">
-                            <div class="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0 mt-1">
-                                <div class="w-2 h-2 rounded-full bg-green-500"></div>
-                            </div>
-                            <div>
-                                <h4 class="font-semibold text-white">Flap Ecosystem Launch</h4>
-                                <p class="text-sm text-gray-400">Early stage positioning within emerging ecosystem</p>
-                            </div>
-                        </div>
-                        
-                        <div class="flex items-start gap-4">
-                            <div class="w-6 h-6 rounded-full bg-teal-500/20 flex items-center justify-center flex-shrink-0 mt-1">
-                                <div class="w-2 h-2 rounded-full bg-teal-500"></div>
-                            </div>
-                            <div>
-                                <h4 class="font-semibold text-white">Early Market Cap</h4>
-                                <p class="text-sm text-gray-400">Asymmetric upside potential for early adopters</p>
-                            </div>
-                        </div>
-                        
-                        <div class="flex items-start gap-4">
-                            <div class="w-6 h-6 rounded-full bg-cyan-500/20 flex items-center justify-center flex-shrink-0 mt-1">
-                                <div class="w-2 h-2 rounded-full bg-cyan-500"></div>
-                            </div>
-                            <div>
-                                <h4 class="font-semibold text-white">Clear Sector Narrative</h4>
-                                <p class="text-sm text-gray-400">Healthcare integration at the meme layer</p>
-                            </div>
-                        </div>
-                        
-                        <div class="flex items-start gap-4">
-                            <div class="w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center flex-shrink-0 mt-1">
-                                <div class="w-2 h-2 rounded-full bg-emerald-500"></div>
-                            </div>
-                            <div>
-                                <h4 class="font-semibold text-white">Privacy Aligned Culture</h4>
-                                <p class="text-sm text-gray-400">Focused branding and community values</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="glass-card rounded-2xl p-6 border border-green-500/30">
-                        <p class="text-gray-300 italic">
-                            "Web3 has seen gaming narratives, AI narratives, Meme narratives. 
-                            <span class="text-green-400 font-semibold">Healthcare integration remains largely untapped</span> at the meme layer."
-                        </p>
-                    </div>
-                </div>
-                
-                <div class="relative">
-                    <img src="https://github.com/bnbfamr/cardiobsc/blob/main/IMG-20260304-WA0037.jpg" alt="Cardio Market Positioning" class="rounded-3xl shadow-2xl shadow-cyan-500/20 w-full">
-                    <div class="absolute -top-6 -left-6 w-48 h-48 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-2xl -z-10 opacity-50 blur-2xl"></div>
-                    
-                    <!-- Floating Badge -->
-                    <div class="absolute -bottom-4 -right-4 glass-card rounded-2xl p-4 border border-white/20 shadow-xl">
-                        <div class="flex items-center gap-3">
-                            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-green-400 to-cyan-500 flex items-center justify-center">
-                                <svg class="w-6 h-6 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
-                                </svg>
-                            </div>
-                            <div>
-                                <div class="text-sm text-gray-400">Untapped Sector</div>
-                                <div class="text-lg font-bold text-white">Healthcare</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Whitepaper Section -->
-    <section id="whitepaper" class="py-24 relative bg-black/30">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12">
-                <h2 class="text-4xl md:text-5xl font-bold font-display mb-4">
-                    Project <span class="gradient-text">Whitepaper</span>
-                </h2>
-                <p class="text-gray-400 max-w-2xl mx-auto">
-                    Comprehensive documentation of the $CARDIO ecosystem, tokenomics, and vision for the future of medical innovation in Web3.
-                </p>
-            </div>
-
-            <div class="whitepaper-card rounded-3xl p-8 md:p-12 relative overflow-hidden">
-                <div class="absolute top-0 right-0 w-64 h-64 bg-green-500/10 rounded-full blur-3xl -mr-32 -mt-32"></div>
-                
-                <div class="grid md:grid-cols-2 gap-12 items-center relative z-10">
-                    <div>
-                        <div class="inline-flex items-center px-3 py-1 rounded-full bg-green-500/20 text-green-400 text-sm font-medium mb-4">
-                            <span class="w-2 h-2 rounded-full bg-green-400 mr-2"></span>
-                            Version 2.0
-                        </div>
-                        <h3 class="text-2xl font-bold mb-4">Official Project Whitepaper</h3>
-                        <p class="text-gray-400 mb-6 leading-relaxed">
-                            Bridging Web3 With Medical Innovation. Detailed analysis of our investment thesis, 
-                            healthcare sector positioning, token structure, and ecosystem growth model.
-                        </p>
-                        
-                        <div class="space-y-3 mb-8">
-                            <div class="flex items-center gap-3 text-sm text-gray-300">
-                                <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
-                                Project Overview & Vision
-                            </div>
-                            <div class="flex items-center gap-3 text-sm text-gray-300">
-                                <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
-                                Investment Thesis Details
-                            </div>
-                            <div class="flex items-center gap-3 text-sm text-gray-300">
-                                <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
-                                Tokenomics & Tax Structure
-                            </div>
-                            <div class="flex items-center gap-3 text-sm text-gray-300">
-                                <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
-                                Risk Disclaimer & Compliance
-                            </div>
-                        </div>
-
-                        <a href="https://github.com/bnbfamr/cardiobsc/blob/main/CARDIO_Whitepaper_v2.pdf" download class="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-gradient-to-r from-green-500 to-cyan-500 text-black font-bold hover:shadow-lg hover:shadow-green-500/30 transition-all transform hover:-translate-y-1">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                            </svg>
-                            Download Whitepaper (PDF)
-                        </a>
-                    </div>
-                    
-                    <div class="relative">
-                        <div class="aspect-square rounded-2xl overflow-hidden border border-green-500/30 shadow-2xl shadow-green-500/10">
-                            <img src="/mnt/kimi/upload/CARDIO_Whitepaper_v2.pdf" alt="Whitepaper Preview" class="w-full h-full object-cover opacity-90" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                            <div class="w-full h-full bg-gradient-to-br from-green-900/50 to-cyan-900/50 flex items-center justify-center" style="display: none;">
-                                <div class="text-center">
-                                    <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-green-500/20 flex items-center justify-center">
-                                        <svg class="w-10 h-10 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                        </svg>
-                                    </div>
-                                    <p class="text-green-400 font-semibold">CARDIO_Whitepaper_v2.pdf</p>
-                                    <p class="text-sm text-gray-500 mt-1">3 Pages</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Narrative Comparison -->
-    <section class="py-24 bg-black/30">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 class="text-3xl md:text-4xl font-bold text-center mb-12 font-display">Web3 Narrative <span class="gradient-text">Evolution</span></h2>
-            
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div class="glass-card rounded-2xl p-6 text-center opacity-50">
-                    <div class="text-3xl mb-2">🎮</div>
-                    <div class="font-semibold">Gaming</div>
-                    <div class="text-xs text-gray-500 mt-1">Saturated</div>
-                </div>
-                <div class="glass-card rounded-2xl p-6 text-center opacity-50">
-                    <div class="text-3xl mb-2">🤖</div>
-                    <div class="font-semibold">AI</div>
-                    <div class="text-xs text-gray-500 mt-1">Saturated</div>
-                </div>
-                <div class="glass-card rounded-2xl p-6 text-center opacity-50">
-                    <div class="text-3xl mb-2">🐸</div>
-                    <div class="font-semibold">Memes</div>
-                    <div class="text-xs text-gray-500 mt-1">Saturated</div>
-                </div>
-                <div class="glass-card rounded-2xl p-6 text-center gradient-border transform scale-105">
-                    <div class="text-3xl mb-2">❤️</div>
-                    <div class="font-semibold text-green-400">Healthcare</div>
-                    <div class="text-xs text-green-400/70 mt-1 font-bold">UNTAPPED</div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section class="py-24 relative">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="text-3xl md:text-4xl font-bold font-display mb-4">
-                Business <span class="gradient-text">Inquiries</span>
-            </h2>
-            <p class="text-gray-400 mb-8">
-                For sponsorship, partnerships, and business correspondence
-            </p>
-            
-            <div class="glass-card rounded-2xl p-8 border border-green-500/20 inline-block">
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center">
-                        <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                        </svg>
-                    </div>
-                    <div class="text-left">
-                        <div class="text-sm text-gray-500 mb-1">Email us at</div>
-                        <a href="mailto:cardiobsc01@gmail.com" class="text-xl font-semibold text-green-400 hover:text-green-300 transition">
-                            cardiobsc01@gmail.com
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Disclaimer -->
-    <section class="py-16 border-t border-white/10">
-        <div class="max-w-4xl mx-auto px-4 text-center">
-            <div class="glass-card rounded-2xl p-8 border border-yellow-500/20">
-                <div class="w-12 h-12 mx-auto mb-4 rounded-full bg-yellow-500/20 flex items-center justify-center">
-                    <svg class="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                    </svg>
-                </div>
-                <h3 class="text-lg font-semibold text-yellow-500 mb-2">Risk Disclaimer</h3>
-                <p class="text-gray-400 text-sm leading-relaxed">
-                    Conduct your own research. Assess risk tolerance. This is not financial advice. 
-                    Cryptocurrency may be unregulated in your jurisdiction. The value of cryptocurrencies may go down as well as up. 
-                    Profits may be subject to capital gains or other taxes applicable in your jurisdiction.
-                </p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="py-12 border-t border-white/10 bg-black/50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid md:grid-cols-3 gap-8 items-center mb-8">
-                <div class="flex items-center space-x-3 justify-center md:justify-start">
-                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-400 to-cyan-400 flex items-center justify-center neon-glow">
-                        <span class="text-xl font-bold text-black">C</span>
-                    </div>
-                    <span class="text-2xl font-bold font-display text-white">$CARDIO</span>
-                </div>
-                
-                <div class="flex justify-center gap-4">
-                    <a href="https://x.com/Cardio_BSC" target="_blank" class="social-btn w-12 h-12 rounded-full glass-card flex items-center justify-center border border-white/10 hover:border-green-500/50 hover:bg-green-500/10 group">
-                        <svg class="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                        </svg>
-                    </a>
-                    <a href="http://tiktok.com/@cardio_bsc" target="_blank" class="social-btn w-12 h-12 rounded-full glass-card flex items-center justify-center border border-white/10 hover:border-green-500/50 hover:bg-green-500/10 group">
-                        <svg class="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/>
-                        </svg>
-                    </a>
-                    <a href="https://t.me/Cardio_BSC" target="_blank" class="social-btn w-12 h-12 rounded-full glass-card flex items-center justify-center border border-white/10 hover:border-green-500/50 hover:bg-green-500/10 group">
-                        <svg class="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
-                        </svg>
-                    </a>
-                </div>
-                
-                <div class="text-center md:text-right">
-                    <a href="mailto:cardiobsc@gmail.com" class="text-sm text-gray-400 hover:text-green-400 transition">
-                        cardiobsc@gmail.com
-                    </a>
-                    <div class="text-xs text-gray-600 mt-1 font-mono">
-                        CA: 0x5ed...7777
-                    </div>
-                </div>
-            </div>
-            
-            <div class="mt-8 pt-8 border-t border-white/5 text-center text-sm text-gray-600">
-                <p>&copy; 2026 $CARDIO. All rights reserved. Built with ❤️ on BSC.</p>
-            </div>
-        </div>
-    </footer>
-
     <script>
-        // Copy CA Function
-        function copyCA() {
-            const ca = '0x5edbd12b8e2fae3f3e279c2db056b54d63537777';
-            navigator.clipboard.writeText(ca).then(() => {
-                const btn = document.querySelector('.copy-btn');
-                const text = document.getElementById('copy-text');
-                btn.classList.add('copied');
-                text.textContent = 'Copied!';
-                setTimeout(() => {
-                    btn.classList.remove('copied');
-                    text.textContent = 'Copy CA';
-                }, 2000);
-            });
-        }
+        // Game State
+        const state = {
+            walletConnected: false,
+            walletAddress: '',
+            selectedTier: null,
+            score: 0,
+            tokens: 0,
+            pendingTokens: 0,
+            isPlaying: false,
+            multiplier: 1,
+            lastEarned: null,
+            cooldownDays: 15,
+            nfts: {
+                1: { name: 'Legendary', multiplier: 5, price: 0.105, icon: '👑', color: '#fdcb6e', bg: 'linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)' },
+                2: { name: 'Epic', multiplier: 4, price: 0.085, icon: '💎', color: '#b2bec3', bg: 'linear-gradient(135deg, #dfe6e9 0%, #b2bec3 100%)' },
+                3: { name: 'Rare', multiplier: 3, price: 0.065, icon: '🏆', color: '#e17055', bg: 'linear-gradient(135deg, #fab1a0 0%, #e17055 100%)' },
+                4: { name: 'Uncommon', multiplier: 2, price: 0.045, icon: '🥈', color: '#0984e3', bg: 'linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)' },
+                5: { name: 'Common', multiplier: 1.5, price: 0.025, icon: '🥉', color: '#00b894', bg: 'linear-gradient(135deg, #55efc4 0%, #00b894 100%)' }
+            }
+        };
 
-        // Mobile Menu Toggle
-        document.getElementById('mobile-menu-btn').addEventListener('click', () => {
-            const menu = document.getElementById('mobile-menu');
-            menu.classList.toggle('hidden');
-        });
-
-        // Three.js Background Animation
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.getElementById('canvas-container').appendChild(renderer.domElement);
-
-        // Create particles
-        const particlesGeometry = new THREE.BufferGeometry();
-        const particlesCount = 1500;
-        const posArray = new Float32Array(particlesCount * 3);
-
-        for(let i = 0; i < particlesCount * 3; i++) {
-            posArray[i] = (Math.random() - 0.5) * 50;
-        }
-
-        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        // Canvas Setup
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
         
-        const particlesMaterial = new THREE.PointsMaterial({
-            size: 0.02,
-            color: 0x39ff14,
-            transparent: true,
-            opacity: 0.8,
-            blending: THREE.AdditiveBlending
-        });
-
-        const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
-        scene.add(particlesMesh);
-
-        camera.position.z = 5;
-
-        // Mouse interaction
-        let mouseX = 0;
-        let mouseY = 0;
-
-        document.addEventListener('mousemove', (event) => {
-            mouseX = event.clientX / window.innerWidth - 0.5;
-            mouseY = event.clientY / window.innerHeight - 0.5;
-        });
-
-        // Animation loop
-        function animate() {
-            requestAnimationFrame(animate);
-            
-            particlesMesh.rotation.y += 0.001;
-            particlesMesh.rotation.x += 0.001;
-            
-            // Mouse parallax
-            particlesMesh.rotation.x += mouseY * 0.05;
-            particlesMesh.rotation.y += mouseX * 0.05;
-            
-            renderer.render(scene, camera);
+        // Set canvas size
+        function resizeCanvas() {
+            const container = document.querySelector('.mobile-container');
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
         }
-        animate();
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
 
-        // Resize handler
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
+        // Game Objects
+        let player = { x: 80, y: 0, width: 50, height: 50, velocityY: 0, grounded: false, rotation: 0 };
+        let obstacles = [];
+        let coins = [];
+        let particles = [];
+        let clouds = [];
+        let gameLoop;
+        let speed = 4;
+        let frameCount = 0;
+        let groundY;
 
-        // GSAP Animations
-        gsap.registerPlugin(ScrollTrigger);
-
-        // Animate stats on scroll
-        gsap.utils.toArray('.stat-counter').forEach(counter => {
-            const target = parseInt(counter.getAttribute('data-target'));
-            gsap.to(counter, {
-                innerHTML: target,
-                duration: 2,
-                snap: { innerHTML: 1 },
-                scrollTrigger: {
-                    trigger: counter,
-                    start: "top 80%",
-                    once: true
-                }
+        // Initialize clouds
+        for (let i = 0; i < 5; i++) {
+            clouds.push({
+                x: Math.random() * canvas.width,
+                y: 50 + Math.random() * 100,
+                size: 30 + Math.random() * 40,
+                speed: 0.5 + Math.random() * 0.5
             });
-        });
+        }
 
-        // Fade in sections
-        gsap.utils.toArray('section').forEach(section => {
-            gsap.from(section, {
-                opacity: 0,
-                y: 50,
-                duration: 1,
-                scrollTrigger: {
-                    trigger: section,
-                    start: "top 80%",
-                    toggleActions: "play none none reverse"
-                }
-            });
-        });
+        function toggleWallet() {
+            if (!state.walletConnected) {
+                document.getElementById('walletModal').classList.remove('hidden');
+            }
+        }
 
-        // Smooth scroll for navigation
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    // Close mobile menu if open
-                    document.getElementById('mobile-menu').classList.add('hidden');
-                }
-            });
-        });
-
-        // Add parallax effect to images
-        document.addEventListener('mousemove', (e) => {
-            const images = document.querySelectorAll('.floating');
-            const x = (window.innerWidth - e.pageX) / 50;
-            const y = (window.innerHeight - e.pageY) / 50;
+        function connectWallet() {
+            // Simulate wallet connection
+            state.walletConnected = true;
+            state.walletAddress = '0x' + Math.random().toString(16).substr(2, 6) + '...' + Math.random().toString(16).substr(2, 4);
             
-            images.forEach((img, index) => {
-                const speed = (index + 1) * 0.5;
-                img.style.transform = `translateX(${x * speed}px) translateY(${y * speed}px)`;
+            const btn = document.getElementById('walletBtn');
+            btn.innerHTML = '<span>✅</span> ' + state.walletAddress;
+            btn.classList.add('connected');
+            
+            document.getElementById('walletModal').classList.add('hidden');
+            document.getElementById('nftModal').classList.remove('hidden');
+            
+            // Check existing cooldown
+            checkExistingCooldown();
+        }
+
+        function selectNFT(tier) {
+            state.selectedTier = tier;
+            state.multiplier = state.nfts[tier].multiplier;
+            
+            // Update UI
+            document.querySelectorAll('.nft-card').forEach((card, idx) => {
+                card.classList.toggle('selected', idx + 1 === tier);
             });
+            
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('startBtn').textContent = `Get ${state.nfts[tier].name} Buddy! 🚀`;
+        }
+
+        function startGame() {
+            document.getElementById('nftModal').classList.add('hidden');
+            document.getElementById('gameHUD').style.display = 'flex';
+            document.getElementById('touchControls').style.display = 'flex';
+            document.getElementById('nftBadge').style.display = 'flex';
+            document.getElementById('withdrawalPanel').style.display = 'block';
+            
+            // Update NFT badge
+            const nft = state.nfts[state.selectedTier];
+            document.getElementById('nftBadgeIcon').textContent = nft.icon;
+            document.getElementById('nftBadgeName').textContent = nft.name;
+            document.getElementById('nftBadgeMult').textContent = nft.multiplier + 'x';
+            document.getElementById('nftBadge').style.borderColor = nft.color;
+            document.getElementById('nftBadgeMult').style.color = nft.color;
+            
+            resetGame();
+            state.isPlaying = true;
+            gameLoop = requestAnimationFrame(update);
+        }
+
+        function resetGame() {
+            groundY = canvas.height - 150;
+            player = { 
+                x: 80, 
+                y: groundY - 50, 
+                width: 50, 
+                height: 50, 
+                velocityY: 0, 
+                grounded: true,
+                rotation: 0 
+            };
+            obstacles = [];
+            coins = [];
+            particles = [];
+            state.score = 0;
+            state.tokens = 0;
+            speed = 4;
+            frameCount = 0;
+            updateHUD();
+        }
+
+        function handleJump(e) {
+            e.preventDefault();
+            if (state.isPlaying && player.grounded) {
+                player.velocityY = -18;
+                player.grounded = false;
+                createParticles(player.x + 25, player.y + 50, 8, '#fff');
+            }
+        }
+
+        function createParticles(x, y, count, color) {
+            for (let i = 0; i < count; i++) {
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: (Math.random() - 0.5) * 6,
+                    vy: (Math.random() - 1) * 6,
+                    life: 40,
+                    color: color,
+                    size: Math.random() * 6 + 3
+                });
+            }
+        }
+
+        function update() {
+            if (!state.isPlaying) return;
+            
+            frameCount++;
+            
+            // Physics
+            player.velocityY += 0.9;
+            player.y += player.velocityY;
+            
+            // Ground collision
+            if (player.y > groundY - player.height) {
+                player.y = groundY - player.height;
+                player.velocityY = 0;
+                player.grounded = true;
+                player.rotation = 0;
+            } else {
+                // Rotate while jumping
+                player.rotation += 0.1;
+            }
+            
+            // Spawn obstacles
+            if (frameCount % 100 === 0) {
+                const type = Math.random() > 0.6 ? 'bird' : 'cactus';
+                obstacles.push({
+                    x: canvas.width,
+                    y: type === 'bird' ? groundY - 100 - Math.random() * 50 : groundY - 40,
+                    width: type === 'bird' ? 40 : 35,
+                    height: type === 'bird' ? 30 : 40,
+                    type: type,
+                    frame: 0
+                });
+            }
+            
+            // Spawn coins
+            if (frameCount % 45 === 0 && Math.random() > 0.4) {
+                coins.push({
+                    x: canvas.width,
+                    y: groundY - 80 - Math.random() * 80,
+                    size: 25,
+                    collected: false,
+                    bob: 0
+                });
+            }
+            
+            // Update obstacles
+            obstacles = obstacles.filter(obs => {
+                obs.x -= speed;
+                obs.frame++;
+                
+                // Collision
+                if (!obs.hit && checkCollision(player, obs)) {
+                    obs.hit = true;
+                    gameOver();
+                    return false;
+                }
+                
+                return obs.x > -100;
+            });
+            
+            // Update coins
+            coins = coins.filter(coin => {
+                coin.x -= speed;
+                coin.bob += 0.1;
+                
+                if (!coin.collected && checkCoinCollision(player, coin)) {
+                    coin.collected = true;
+                    state.score += 10;
+                    const earned = 1 * state.multiplier;
+                    state.tokens += earned;
+                    state.pendingTokens += earned;
+                    createParticles(coin.x, coin.y, 10, '#FFD93D');
+                }
+                
+                return coin.x > -50 && !coin.collected;
+            });
+            
+            // Update particles
+            particles = particles.filter(p => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += 0.3;
+                p.life--;
+                return p.life > 0;
+            });
+            
+            // Update clouds
+            clouds.forEach(cloud => {
+                cloud.x -= cloud.speed;
+                if (cloud.x < -100) cloud.x = canvas.width + 100;
+            });
+            
+            // Increase speed
+            if (frameCount % 500 === 0) speed += 0.3;
+            
+            // Score over time
+            if (frameCount % 15 === 0) state.score += 1;
+            
+            updateHUD();
+            draw();
+            gameLoop = requestAnimationFrame(update);
+        }
+
+        function checkCollision(a, b) {
+            return a.x < b.x + b.width - 10 &&
+                   a.x + a.width - 10 > b.x &&
+                   a.y < b.y + b.height - 10 &&
+                   a.y + a.height - 10 > b.y;
+        }
+
+        function checkCoinCollision(a, coin) {
+            const dx = (a.x + a.width/2) - coin.x;
+            const dy = (a.y + a.height/2) - (coin.y + Math.sin(coin.bob) * 5);
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            return dist < (a.width/2 + coin.size/2);
+        }
+
+        function draw() {
+            // Clear with gradient
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#87CEEB');
+            gradient.addColorStop(0.4, '#B8E6F0');
+            gradient.addColorStop(0.4, '#90EE90');
+            gradient.addColorStop(1, '#7FDD7F');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw clouds
+            ctx.fillStyle = 'rgba(255,255,255,0.8)';
+            clouds.forEach(cloud => {
+                ctx.beginPath();
+                ctx.arc(cloud.x, cloud.y, cloud.size, 0, Math.PI * 2);
+                ctx.arc(cloud.x + cloud.size * 0.6, cloud.y - cloud.size * 0.2, cloud.size * 0.8, 0, Math.PI * 2);
+                ctx.arc(cloud.x - cloud.size * 0.6, cloud.y - cloud.size * 0.1, cloud.size * 0.7, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            
+            // Draw hills
+            ctx.fillStyle = '#98D98E';
+            ctx.beginPath();
+            ctx.moveTo(0, groundY);
+            for (let i = 0; i <= canvas.width; i += 50) {
+                ctx.lineTo(i, groundY - Math.sin(i * 0.01 + frameCount * 0.005) * 20 - 20);
+            }
+            ctx.lineTo(canvas.width, canvas.height);
+            ctx.lineTo(0, canvas.height);
+            ctx.fill();
+            
+            // Draw ground
+            ctx.fillStyle = '#7FDD7F';
+            ctx.fillRect(0, groundY, canvas.width, canvas.height - groundY);
+            ctx.fillStyle = '#6BC96B';
+            ctx.fillRect(0, groundY, canvas.width, 8);
+            
+            // Draw grid pattern on ground
+            ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+            ctx.lineWidth = 2;
+            for (let i = (frameCount * -speed) % 50; i < canvas.width; i += 50) {
+                ctx.beginPath();
+                ctx.moveTo(i, groundY);
+                ctx.lineTo(i - 20, canvas.height);
+                ctx.stroke();
+            }
+            
+            // Draw player (Cute bunny mascot)
+            drawBunny(player.x, player.y, player.width, player.height, player.rotation);
+            
+            // Draw obstacles
+            obstacles.forEach(obs => {
+                if (obs.type === 'bird') {
+                    drawBird(obs.x, obs.y, obs.frame);
+                } else {
+                    drawCactus(obs.x, obs.y);
+                }
+            });
+            
+            // Draw coins
+            coins.forEach(coin => {
+                const bobY = Math.sin(coin.bob) * 5;
+                drawCoin(coin.x, coin.y + bobY, coin.size);
+            });
+            
+            // Draw particles
+            particles.forEach(p => {
+                ctx.fillStyle = p.color;
+                ctx.globalAlpha = p.life / 40;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            });
+        }
+
+        function drawBunny(x, y, w, h, rotation) {
+            ctx.save();
+            ctx.translate(x + w/2, y + h/2);
+            ctx.rotate(rotation);
+            
+            // Shadow
+            ctx.fillStyle = 'rgba(0,0,0,0.1)';
+            ctx.beginPath();
+            ctx.ellipse(0, h/2 + 5, w/2, 8, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Body
+            ctx.fillStyle = '#FFFFFF';
+            ctx.beginPath();
+            ctx.ellipse(0, 5, w/2 - 5, h/2 - 5, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Inner ear color based on NFT tier
+            const tierColors = ['#fdcb6e', '#b2bec3', '#e17055', '#0984e3', '#00b894'];
+            const earColor = state.selectedTier ? tierColors[state.selectedTier - 1] : '#FFB6C1';
+            
+            // Ears
+            ctx.fillStyle = '#FFFFFF';
+            // Left ear
+            ctx.beginPath();
+            ctx.ellipse(-12, -20, 10, 22, -0.2, 0, Math.PI * 2);
+            ctx.fill();
+            // Right ear
+            ctx.beginPath();
+            ctx.ellipse(12, -20, 10, 22, 0.2, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Inner ears
+            ctx.fillStyle = earColor;
+            ctx.beginPath();
+            ctx.ellipse(-12, -20, 5, 15, -0.2, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.ellipse(12, -20, 5, 15, 0.2, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Head
+            ctx.fillStyle = '#FFFFFF';
+            ctx.beginPath();
+            ctx.arc(0, -5, w/2 - 8, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Eyes
+            ctx.fillStyle = '#2D3436';
+            ctx.beginPath();
+            ctx.arc(-8, -5, 5, 0, Math.PI * 2);
+            ctx.arc(8, -5, 5, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Eye shine
+            ctx.fillStyle = '#FFFFFF';
+            ctx.beginPath();
+            ctx.arc(-6, -7, 2, 0, Math.PI * 2);
+            ctx.arc(10, -7, 2, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Nose
+            ctx.fillStyle = '#FF6B6B';
+            ctx.beginPath();
+            ctx.arc(0, 0, 3, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Cheeks
+            ctx.fillStyle = 'rgba(255, 107, 107, 0.3)';
+            ctx.beginPath();
+            ctx.arc(-15, 0, 4, 0, Math.PI * 2);
+            ctx.arc(15, 0, 4, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Feet
+            ctx.fillStyle = '#FFFFFF';
+            ctx.beginPath();
+            ctx.ellipse(-12, 20, 8, 6, 0, 0, Math.PI * 2);
+            ctx.ellipse(12, 20, 8, 6, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.restore();
+        }
+
+        function drawCactus(x, y) {
+            ctx.fillStyle = '#27AE60';
+            // Main body
+            ctx.fillRect(x + 10, y, 15, 40);
+            // Left arm
+            ctx.fillRect(x, y + 10, 10, 8);
+            ctx.fillRect(x, y + 10, 8, 20);
+            // Right arm
+            ctx.fillRect(x + 25, y + 5, 10, 8);
+            ctx.fillRect(x + 27, y + 5, 8, 15);
+            
+            // Spikes
+            ctx.fillStyle = '#1E8449';
+            ctx.beginPath();
+            ctx.moveTo(x + 5, y + 15);
+            ctx.lineTo(x + 3, y + 12);
+            ctx.lineTo(x + 7, y + 15);
+            ctx.fill();
+        }
+
+        function drawBird(x, y, frame) {
+            const wingY = Math.sin(frame * 0.3) * 5;
+            
+            // Body
+            ctx.fillStyle = '#E74C3C';
+            ctx.beginPath();
+            ctx.ellipse(x + 20, y + 15, 20, 12, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Head
+            ctx.beginPath();
+            ctx.arc(x + 35, y + 10, 10, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Beak
+            ctx.fillStyle = '#F39C12';
+            ctx.beginPath();
+            ctx.moveTo(x + 42, y + 8);
+            ctx.lineTo(x + 50, y + 12);
+            ctx.lineTo(x + 42, y + 16);
+            ctx.fill();
+            
+            // Eye
+            ctx.fillStyle = '#FFFFFF';
+            ctx.beginPath();
+            ctx.arc(x + 38, y + 8, 3, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#000000';
+            ctx.beginPath();
+            ctx.arc(x + 39, y + 8, 1.5, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Wings
+            ctx.fillStyle = '#C0392B';
+            ctx.beginPath();
+            ctx.ellipse(x + 15, y + 10 + wingY, 12, 6, -0.3, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function drawCoin(x, y, size) {
+            // Outer ring
+            ctx.fillStyle = '#FFD93D';
+            ctx.beginPath();
+            ctx.arc(x, y, size/2, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Inner
+            ctx.fillStyle = '#FFE66D';
+            ctx.beginPath();
+            ctx.arc(x, y, size/2 - 3, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Shine
+            ctx.fillStyle = '#FFFFFF';
+            ctx.beginPath();
+            ctx.arc(x - 5, y - 5, 4, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // RUN text
+            ctx.fillStyle = '#F39C12';
+            ctx.font = 'bold 12px Nunito';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('$', x, y);
+        }
+
+        function updateHUD() {
+            document.getElementById('scoreDisplay').textContent = state.score;
+            document.getElementById('tokenDisplay').textContent = Math.floor(state.tokens);
+            document.getElementById('pendingAmount').textContent = Math.floor(state.pendingTokens) + ' RUN';
+            
+            updateWithdrawalButton();
+        }
+
+        function gameOver() {
+            state.isPlaying = false;
+            cancelAnimationFrame(gameLoop);
+            
+            // Set cooldown if earned tokens
+            if (state.pendingTokens > 0 && !state.lastEarned) {
+                state.lastEarned = Date.now();
+                localStorage.setItem('jumpyCooldown', state.lastEarned.toString());
+                localStorage.setItem('jumpyPending', state.pendingTokens.toString());
+            }
+            
+            document.getElementById('finalScore').textContent = state.score;
+            document.getElementById('finalTokens').textContent = Math.floor(state.pendingTokens);
+            document.getElementById('gameOverModal').classList.remove('hidden');
+            
+            startCooldownTimer();
+        }
+
+        function playAgain() {
+            document.getElementById('gameOverModal').classList.add('hidden');
+            resetGame();
+            state.isPlaying = true;
+            gameLoop = requestAnimationFrame(update);
+        }
+
+        function checkExistingCooldown() {
+            const saved = localStorage.getItem('jumpyCooldown');
+            const pending = localStorage.getItem('jumpyPending');
+            
+            if (saved && pending) {
+                state.lastEarned = parseInt(saved);
+                state.pendingTokens = parseFloat(pending);
+            }
+        }
+
+        function updateWithdrawalButton() {
+            const btn = document.getElementById('withdrawBtn');
+            
+            if (!state.lastEarned || state.pendingTokens === 0) {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="lock-icon">🔒</span>No Rewards';
+                btn.classList.remove('ready');
+                return;
+            }
+            
+            const elapsed = Date.now() - state.lastEarned;
+            const remaining = (state.cooldownDays * 24 * 60 * 60 * 1000) - elapsed;
+            
+            if (remaining > 0) {
+                btn.disabled = true;
+                btn.classList.remove('ready');
+                const days = Math.floor(remaining / (24 * 60 * 60 * 1000));
+                const hours = Math.floor((remaining % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+                btn.innerHTML = `<span class="lock-icon">🔒</span>${days}d ${hours}h left`;
+            } else {
+                btn.disabled = false;
+                btn.classList.add('ready');
+                btn.innerHTML = '<span class="lock-icon">🔓</span>Withdraw Now!';
+            }
+        }
+
+        function startCooldownTimer() {
+            const display = document.getElementById('cooldownTimer');
+            
+            function update() {
+                if (!state.lastEarned) return;
+                
+                const elapsed = Date.now() - state.lastEarned;
+                const remaining = (state.cooldownDays * 24 * 60 * 60 * 1000) - elapsed;
+                
+                if (remaining > 0) {
+                    const days = Math.floor(remaining / (24 * 60 * 60 * 1000));
+                    const hours = Math.floor((remaining % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+                    const mins = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000));
+                    display.textContent = `${days}d ${hours}h ${mins}m`;
+                } else {
+                    display.textContent = '✅ Ready!';
+                    display.style.color = '#00b894';
+                }
+            }
+            
+            update();
+            setInterval(update, 60000); // Update every minute
+        }
+
+        function withdrawTokens() {
+            if (state.pendingTokens > 0) {
+                // Simulate withdrawal
+                alert(`🎉 Success!\n\n${Math.floor(state.pendingTokens)} $RUN tokens withdrawn to your wallet!\n\nTx: 0x${Math.random().toString(16).substr(2, 8)}...`);
+                
+                state.pendingTokens = 0;
+                state.lastEarned = null;
+                localStorage.removeItem('jumpyCooldown');
+                localStorage.removeItem('jumpyPending');
+                
+                updateHUD();
+                document.getElementById('withdrawalPanel').style.display = 'none';
+            }
+        }
+
+        // Prevent default touch behaviors
+        document.addEventListener('touchmove', function(e) {
+            if (e.target === canvas) e.preventDefault();
+        }, { passive: false });
+        
+        document.addEventListener('gesturestart', function(e) {
+            e.preventDefault();
         });
+
+        // Initial draw
+        resizeCanvas();
+        draw();
+        
+        // Update withdrawal button periodically
+        setInterval(updateWithdrawalButton, 60000);
     </script>
 </body>
 </html>
