@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
-    <title>Jumpy - Mobile Runner</title>
+    <title>JumpyRun - Play to Earn</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800&display=swap');
         
@@ -19,7 +19,7 @@
         
         body {
             font-family: 'Nunito', sans-serif;
-            background: linear-gradient(180deg, #87CEEB 0%, #B8E6F0 50%, #90EE90 50%, #7FDD7F 100%);
+            background: #000;
             min-height: 100vh;
             overflow: hidden;
             position: fixed;
@@ -27,7 +27,6 @@
             height: 100%;
         }
         
-        /* Mobile Container */
         .mobile-container {
             width: 100%;
             height: 100%;
@@ -36,16 +35,15 @@
             position: relative;
             background: linear-gradient(180deg, #87CEEB 0%, #B8E6F0 40%, #90EE90 40%, #7FDD7F 100%);
             overflow: hidden;
-            box-shadow: 0 0 50px rgba(0,0,0,0.2);
         }
         
-        /* Header */
+        /* Header - Compact */
         .game-header {
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            padding: 15px 20px;
+            padding: 10px 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -55,38 +53,28 @@
         
         .logo {
             font-family: 'Fredoka One', cursive;
-            font-size: 28px;
+            font-size: 24px;
             color: #FF6B6B;
-            text-shadow: 3px 3px 0px #FFE66D;
-            letter-spacing: 1px;
+            text-shadow: 2px 2px 0px #FFE66D;
         }
         
         .wallet-btn {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border: none;
-            padding: 10px 16px;
-            border-radius: 25px;
+            padding: 8px 14px;
+            border-radius: 20px;
             color: white;
             font-family: 'Nunito', sans-serif;
             font-weight: 700;
-            font-size: 12px;
+            font-size: 11px;
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-            transition: transform 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        .wallet-btn:active {
-            transform: scale(0.95);
         }
         
         .wallet-btn.connected {
             background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
         }
         
-        /* Game Canvas */
         #gameCanvas {
             display: block;
             width: 100%;
@@ -94,27 +82,107 @@
             touch-action: none;
         }
         
-        /* Touch Controls */
-        .touch-controls {
+        /* Minimalist HUD - Top Only */
+        .hud {
+            position: absolute;
+            top: 60px;
+            left: 15px;
+            right: 15px;
+            display: flex;
+            justify-content: space-between;
+            z-index: 90;
+            pointer-events: none;
+        }
+        
+        .hud-pill {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 8px 16px;
+            border-radius: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .hud-icon {
+            font-size: 16px;
+        }
+        
+        .hud-text {
+            font-family: 'Fredoka One', cursive;
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .hud-tokens {
+            color: #FFD93D;
+            text-shadow: 1px 1px 0 rgba(0,0,0,0.1);
+        }
+        
+        /* NFT Badge - Small Corner */
+        .nft-badge-mini {
+            position: absolute;
+            top: 60px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 6px 12px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 90;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            border: 2px solid;
+        }
+        
+        /* Compact Stats Bar */
+        .stats-bar {
+            position: absolute;
+            top: 105px;
+            left: 15px;
+            right: 15px;
+            display: flex;
+            gap: 10px;
+            z-index: 90;
+            pointer-events: none;
+        }
+        
+        .stat-pill {
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(10px);
+            padding: 6px 12px;
+            border-radius: 15px;
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        /* Touch Controls - Bottom Area Only */
+        .touch-zone {
             position: absolute;
             bottom: 0;
             left: 0;
             right: 0;
-            height: 200px;
+            height: 180px;
             z-index: 50;
             display: flex;
             justify-content: center;
             align-items: flex-end;
-            padding-bottom: 40px;
+            padding-bottom: 30px;
             pointer-events: none;
         }
         
         .jump-btn {
-            width: 120px;
-            height: 120px;
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
-            border: 4px solid rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.25);
+            border: 3px solid rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(10px);
             display: flex;
             flex-direction: column;
@@ -122,105 +190,125 @@
             justify-content: center;
             pointer-events: auto;
             user-select: none;
-            -webkit-user-select: none;
             transition: transform 0.1s, background 0.1s;
             box-shadow: 0 8px 32px rgba(0,0,0,0.1);
         }
         
         .jump-btn:active {
             transform: scale(0.9);
-            background: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.4);
         }
         
         .jump-icon {
-            font-size: 40px;
-            margin-bottom: 5px;
+            font-size: 32px;
+            margin-bottom: 2px;
         }
         
         .jump-text {
             color: white;
             font-weight: 800;
-            font-size: 14px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            font-size: 12px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
         }
         
-        /* HUD */
-        .hud {
+        /* Slide-up Rewards Panel */
+        .rewards-drawer {
             position: absolute;
-            top: 80px;
-            left: 20px;
-            right: 20px;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 25px 25px 0 0;
+            padding: 20px;
+            z-index: 150;
+            transform: translateY(calc(100% - 60px));
+            transition: transform 0.3s ease;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
+        }
+        
+        .rewards-drawer.open {
+            transform: translateY(0);
+        }
+        
+        .drawer-handle {
+            width: 40px;
+            height: 4px;
+            background: #ddd;
+            border-radius: 2px;
+            margin: 0 auto 15px;
+        }
+        
+        .drawer-header {
             display: flex;
             justify-content: space-between;
-            z-index: 90;
-            pointer-events: none;
-        }
-        
-        .hud-item {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 12px 18px;
-            border-radius: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            display: flex;
-            flex-direction: column;
             align-items: center;
-            min-width: 80px;
+            margin-bottom: 15px;
         }
         
-        .hud-label {
-            font-size: 11px;
-            color: #888;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .hud-value {
+        .drawer-title {
             font-family: 'Fredoka One', cursive;
-            font-size: 24px;
+            font-size: 18px;
             color: #333;
-            margin-top: 2px;
         }
         
-        .hud-tokens {
-            color: #FFD93D;
-            text-shadow: 1px 1px 0px rgba(0,0,0,0.1);
-        }
-        
-        /* NFT Badge */
-        .nft-badge {
-            position: absolute;
-            top: 80px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 10px 15px;
+        .pending-balance {
+            background: linear-gradient(135deg, #FFD93D 0%, #FFA502 100%);
+            padding: 10px 20px;
             border-radius: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            z-index: 90;
+            font-family: 'Fredoka One', cursive;
+            font-size: 20px;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+        
+        .withdraw-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .cooldown-status {
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
-            border: 3px solid;
-        }
-        
-        .nft-icon {
-            font-size: 24px;
-        }
-        
-        .nft-info {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .nft-name {
-            font-size: 11px;
-            font-weight: 800;
+            margin-bottom: 10px;
+            font-size: 14px;
             color: #666;
         }
         
-        .nft-multiplier {
+        .cooldown-timer {
+            font-family: 'Fredoka One', cursive;
+            font-size: 24px;
+            color: #FF6B6B;
+            margin: 10px 0;
+        }
+        
+        .withdraw-btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 15px;
+            background: #ddd;
+            color: #999;
             font-family: 'Fredoka One', cursive;
             font-size: 16px;
+            cursor: not-allowed;
+            transition: all 0.3s;
+        }
+        
+        .withdraw-btn.ready {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 184, 148, 0.3);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
         }
         
         /* Modals */
@@ -230,66 +318,61 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.85);
+            background: rgba(0,0,0,0.9);
             backdrop-filter: blur(10px);
             z-index: 200;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 30px;
+            padding: 25px;
             overflow-y: auto;
         }
         
         .modal-content {
             background: white;
-            border-radius: 30px;
-            padding: 30px 25px;
+            border-radius: 25px;
+            padding: 25px 20px;
             width: 100%;
-            max-height: 85vh;
+            max-height: 90vh;
             overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
         
         .modal-title {
             font-family: 'Fredoka One', cursive;
-            font-size: 28px;
+            font-size: 24px;
             color: #FF6B6B;
             text-align: center;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
         
         .modal-subtitle {
             text-align: center;
             color: #888;
-            font-size: 14px;
-            margin-bottom: 25px;
+            font-size: 13px;
+            margin-bottom: 20px;
         }
         
-        /* NFT Cards */
         .nft-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 20px;
+            gap: 10px;
+            margin-bottom: 15px;
         }
         
         .nft-card {
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            border-radius: 20px;
-            padding: 20px 15px;
+            border-radius: 15px;
+            padding: 15px 10px;
             text-align: center;
-            border: 4px solid transparent;
+            border: 3px solid transparent;
             cursor: pointer;
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
+            transition: all 0.2s;
         }
         
         .nft-card.selected {
             border-color: #FF6B6B;
-            transform: scale(1.05);
-            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+            transform: scale(1.02);
         }
         
         .nft-card.tier-1 { background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%); }
@@ -298,276 +381,88 @@
         .nft-card.tier-4 { background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%); }
         .nft-card.tier-5 { background: linear-gradient(135deg, #55efc4 0%, #00b894 100%); }
         
-        .card-icon {
-            font-size: 40px;
-            margin-bottom: 8px;
-        }
-        
-        .card-tier {
-            font-family: 'Fredoka One', cursive;
-            font-size: 14px;
-            color: white;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
-            margin-bottom: 5px;
-        }
-        
-        .card-price {
-            background: rgba(255,255,255,0.9);
-            padding: 6px 12px;
-            border-radius: 15px;
-            font-weight: 800;
-            font-size: 13px;
-            color: #333;
-            display: inline-block;
-            margin-bottom: 5px;
-        }
-        
-        .card-multiplier {
-            font-size: 12px;
-            color: white;
-            font-weight: 700;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
-        }
+        .card-icon { font-size: 32px; margin-bottom: 5px; }
+        .card-tier { font-family: 'Fredoka One'; font-size: 12px; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.2); }
+        .card-price { background: rgba(255,255,255,0.9); padding: 4px 10px; border-radius: 10px; font-size: 11px; font-weight: 800; margin: 5px 0; display: inline-block; }
+        .card-multiplier { font-size: 11px; color: white; font-weight: 700; }
         
         .action-btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 15px;
+            background: linear-gradient(135deg, #FF6B6B 0%, #EE5A6F 100%);
+            color: white;
+            font-family: 'Fredoka One', cursive;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+        
+        .action-btn:disabled { background: #ccc; box-shadow: none; }
+        
+        .hidden { display: none !important; }
+        
+        /* Game Over */
+        .game-over-content { text-align: center; }
+        .trophy { font-size: 50px; margin-bottom: 10px; animation: bounce 2s infinite; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        
+        .result-box {
+            background: #f8f9fa;
+            border-radius: 20px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        
+        .result-stat {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .result-stat:last-child { border-bottom: none; }
+        .result-label { color: #888; font-size: 14px; }
+        .result-value { font-family: 'Fredoka One'; font-size: 20px; color: #333; }
+        .result-value.tokens { color: #FFD93D; }
+        
+        /* Connect Screen */
+        .connect-screen { text-align: center; padding: 20px; }
+        .mascot-welcome { font-size: 80px; margin-bottom: 15px; animation: wave 2s infinite; display: inline-block; }
+        @keyframes wave { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(-10deg); } 75% { transform: rotate(10deg); } }
+        .welcome-text { font-family: 'Fredoka One'; font-size: 28px; color: #FF6B6B; margin-bottom: 8px; }
+        .welcome-sub { color: #888; font-size: 14px; margin-bottom: 30px; line-height: 1.5; }
+        
+        .connect-wallet-btn {
             width: 100%;
             padding: 18px;
             border: none;
             border-radius: 20px;
-            background: linear-gradient(135deg, #FF6B6B 0%, #EE5A6F 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             font-family: 'Fredoka One', cursive;
             font-size: 18px;
             cursor: pointer;
-            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.4);
-            transition: transform 0.2s;
-            margin-top: 10px;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
         }
         
-        .action-btn:active {
-            transform: scale(0.98);
-        }
-        
-        .action-btn:disabled {
-            background: #ccc;
-            box-shadow: none;
-        }
-        
-        /* Game Over Screen */
-        .game-over-stats {
-            text-align: center;
-            margin: 20px 0;
-        }
-        
-        .trophy {
-            font-size: 60px;
-            margin-bottom: 15px;
-            animation: bounce 2s infinite;
-        }
-        
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-        
-        .stat-row {
-            display: flex;
-            justify-content: space-around;
-            margin: 20px 0;
-        }
-        
-        .stat-box {
-            background: #f8f9fa;
-            padding: 15px 20px;
-            border-radius: 15px;
-            min-width: 100px;
-        }
-        
-        .stat-label {
-            font-size: 12px;
-            color: #888;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-        
-        .stat-value {
-            font-family: 'Fredoka One', cursive;
-            font-size: 28px;
-            color: #333;
-            margin-top: 5px;
-        }
-        
-        .token-value {
-            color: #FFD93D;
-        }
-        
-        .cooldown-box {
-            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
-            padding: 20px;
-            border-radius: 20px;
-            margin-top: 20px;
-            text-align: center;
-        }
-        
-        .cooldown-title {
-            font-weight: 800;
-            color: #d63031;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        
-        .cooldown-timer {
-            font-family: 'Fredoka One', cursive;
-            font-size: 24px;
-            color: #2d3436;
-        }
-        
-        .cooldown-desc {
-            font-size: 12px;
-            color: #636e72;
-            margin-top: 8px;
-        }
-        
-        /* Withdrawal Panel */
-        .withdrawal-float {
+        /* Toggle button for drawer */
+        .drawer-toggle {
             position: absolute;
-            bottom: 220px;
-            left: 20px;
+            bottom: 20px;
             right: 20px;
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 25px;
-            padding: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            z-index: 80;
-            display: none;
-            border: 3px solid #FFD93D;
-        }
-        
-        .withdrawal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        
-        .withdrawal-label {
-            font-size: 12px;
-            color: #888;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-        
-        .withdrawal-amount {
-            font-family: 'Fredoka One', cursive;
-            font-size: 32px;
-            color: #FFD93D;
-        }
-        
-        .withdraw-btn {
-            width: 100%;
-            padding: 15px;
-            border: none;
-            border-radius: 15px;
-            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
-            color: white;
-            font-family: 'Fredoka One', cursive;
-            font-size: 16px;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 184, 148, 0.3);
-            transition: all 0.3s;
-        }
-        
-        .withdraw-btn:disabled {
-            background: #b2bec3;
-            box-shadow: none;
-        }
-        
-        .withdraw-btn.ready {
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-        }
-        
-        .lock-icon {
-            font-size: 20px;
-            margin-right: 8px;
-        }
-        
-        /* Wallet Connection Screen */
-        .connect-screen {
-            text-align: center;
-            padding: 40px 20px;
-        }
-        
-        .mascot-welcome {
-            font-size: 80px;
-            margin-bottom: 20px;
-            animation: wave 2s infinite;
-            display: inline-block;
-        }
-        
-        @keyframes wave {
-            0%, 100% { transform: rotate(0deg); }
-            25% { transform: rotate(-10deg); }
-            75% { transform: rotate(10deg); }
-        }
-        
-        .welcome-text {
-            font-family: 'Fredoka One', cursive;
-            font-size: 32px;
-            color: #FF6B6B;
-            margin-bottom: 10px;
-        }
-        
-        .welcome-sub {
-            color: #888;
-            font-size: 16px;
-            margin-bottom: 40px;
-            line-height: 1.5;
-        }
-        
-        .connect-wallet-btn {
-            width: 100%;
-            padding: 20px;
-            border: none;
-            border-radius: 25px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            font-family: 'Fredoka One', cursive;
-            font-size: 20px;
-            cursor: pointer;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-            transition: transform 0.2s;
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 215, 61, 0.95);
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-        }
-        
-        .connect-wallet-btn:active {
-            transform: scale(0.98);
-        }
-        
-        .hidden {
-            display: none !important;
-        }
-        
-        /* Scrollbar styling */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #ddd;
-            border-radius: 3px;
+            font-size: 24px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 140;
+            cursor: pointer;
+            border: 3px solid white;
         }
     </style>
 </head>
@@ -575,8 +470,8 @@
     <div class="mobile-container">
         <!-- Header -->
         <div class="game-header">
-            <div class="logo">🐰 Jumpy</div>
-            <button class="wallet-btn" id="walletBtn" onclick="toggleWallet()">
+            <div class="logo">🐰 JumpyRun</div>
+            <button class="wallet-btn" id="walletBtn" onclick="showWalletModal()">
                 <span>🔗</span> Connect
             </button>
         </div>
@@ -584,64 +479,68 @@
         <!-- Game Canvas -->
         <canvas id="gameCanvas"></canvas>
         
-        <!-- HUD -->
+        <!-- Minimalist HUD -->
         <div class="hud" id="gameHUD" style="display: none;">
-            <div class="hud-item">
-                <span class="hud-label">Score</span>
-                <span class="hud-value" id="scoreDisplay">0</span>
+            <div class="hud-pill">
+                <span class="hud-icon">🏆</span>
+                <span class="hud-text" id="scoreDisplay">0</span>
             </div>
-            <div class="hud-item">
-                <span class="hud-label">Tokens</span>
-                <span class="hud-value hud-tokens" id="tokenDisplay">0</span>
+            <div class="hud-pill">
+                <span class="hud-icon">🪙</span>
+                <span class="hud-text hud-tokens" id="tokenDisplay">0</span>
             </div>
         </div>
         
         <!-- NFT Badge -->
-        <div class="nft-badge" id="nftBadge" style="display: none;">
-            <span class="nft-icon" id="nftBadgeIcon">🥉</span>
-            <div class="nft-info">
-                <span class="nft-name" id="nftBadgeName">Common</span>
-                <span class="nft-multiplier" id="nftBadgeMult" style="color: #55efc4;">1.5x</span>
-            </div>
+        <div class="nft-badge-mini" id="nftBadge" style="display: none;">
+            <span id="nftIcon">🥉</span>
+            <span id="nftMult">1.5x</span>
         </div>
         
         <!-- Touch Controls -->
-        <div class="touch-controls" id="touchControls" style="display: none;">
+        <div class="touch-zone" id="touchControls" style="display: none;">
             <div class="jump-btn" id="jumpBtn" ontouchstart="handleJump(event)" onclick="handleJump(event)">
                 <span class="jump-icon">⬆️</span>
                 <span class="jump-text">JUMP</span>
             </div>
         </div>
         
-        <!-- Withdrawal Panel -->
-        <div class="withdrawal-float" id="withdrawalPanel">
-            <div class="withdrawal-header">
-                <div>
-                    <div class="withdrawal-label">Pending Rewards</div>
-                    <div class="withdrawal-amount" id="pendingAmount">0 RUN</div>
-                </div>
-                <span style="font-size: 30px;">🪙</span>
+        <!-- Rewards Drawer -->
+        <div class="rewards-drawer" id="rewardsDrawer">
+            <div class="drawer-handle"></div>
+            <div class="drawer-header">
+                <span class="drawer-title">Your Rewards</span>
+                <span class="pending-balance" id="pendingBalance">0 RUN</span>
             </div>
-            <button class="withdraw-btn" id="withdrawBtn" onclick="withdrawTokens()" disabled>
-                <span class="lock-icon">🔒</span>Locked (15 days)
-            </button>
+            <div class="withdraw-section">
+                <div class="cooldown-status">
+                    <span id="lockIcon">🔒</span>
+                    <span id="statusText">Rewards locked for security</span>
+                </div>
+                <div class="cooldown-timer" id="cooldownTimer">--</div>
+                <button class="withdraw-btn" id="withdrawBtn" onclick="withdrawTokens()" disabled>
+                    Withdraw to Wallet
+                </button>
+            </div>
         </div>
         
-        <!-- Wallet Connection Modal -->
+        <!-- Toggle Button -->
+        <div class="drawer-toggle" id="drawerToggle" onclick="toggleDrawer()" style="display: none;">
+            🪙
+        </div>
+        
+        <!-- Wallet Modal -->
         <div class="modal" id="walletModal">
             <div class="connect-screen">
                 <div class="mascot-welcome">🐰</div>
-                <div class="welcome-text">Welcome to Jumpy!</div>
+                <div class="welcome-text">Welcome to JumpyRun!</div>
                 <div class="welcome-sub">
-                    Connect your wallet to start earning<br>
-                    $RUN tokens while you play
+                    Connect your wallet to earn $RUN tokens<br>
+                    while playing with your bunny buddy
                 </div>
                 <button class="connect-wallet-btn" onclick="connectWallet()">
-                    <span>🔗</span> Connect Wallet
+                    Connect Wallet
                 </button>
-                <div style="margin-top: 30px; font-size: 12px; color: #b2bec3;">
-                    Powered by BNB Chain
-                </div>
             </div>
         </div>
         
@@ -649,7 +548,7 @@
         <div class="modal hidden" id="nftModal">
             <div class="modal-content">
                 <div class="modal-title">Choose Your Buddy! 🐰</div>
-                <div class="modal-subtitle">Select an NFT pass to unlock rewards</div>
+                <div class="modal-subtitle">Mint an NFT pass to start earning</div>
                 
                 <div class="nft-grid">
                     <div class="nft-card tier-1" onclick="selectNFT(1)">
@@ -658,29 +557,25 @@
                         <div class="card-price">0.105 BNB</div>
                         <div class="card-multiplier">5x Rewards</div>
                     </div>
-                    
                     <div class="nft-card tier-2" onclick="selectNFT(2)">
                         <div class="card-icon">💎</div>
                         <div class="card-tier">Epic</div>
                         <div class="card-price">0.085 BNB</div>
                         <div class="card-multiplier">4x Rewards</div>
                     </div>
-                    
                     <div class="nft-card tier-3" onclick="selectNFT(3)">
                         <div class="card-icon">🏆</div>
                         <div class="card-tier">Rare</div>
                         <div class="card-price">0.065 BNB</div>
                         <div class="card-multiplier">3x Rewards</div>
                     </div>
-                    
                     <div class="nft-card tier-4" onclick="selectNFT(4)">
                         <div class="card-icon">🥈</div>
                         <div class="card-tier">Uncommon</div>
                         <div class="card-price">0.045 BNB</div>
                         <div class="card-multiplier">2x Rewards</div>
                     </div>
-                    
-                    <div class="nft-card tier-5" onclick="selectNFT(5)">
+                    <div class="nft-card tier-5" onclick="selectNFT(5)" style="grid-column: 1 / -1;">
                         <div class="card-icon">🥉</div>
                         <div class="card-tier">Common</div>
                         <div class="card-price">0.025 BNB</div>
@@ -696,34 +591,34 @@
         
         <!-- Game Over Modal -->
         <div class="modal hidden" id="gameOverModal">
-            <div class="modal-content">
+            <div class="modal-content game-over-content">
                 <div class="trophy">🏆</div>
                 <div class="modal-title">Great Run! 🎉</div>
                 
-                <div class="game-over-stats">
-                    <div class="stat-row">
-                        <div class="stat-box">
-                            <div class="stat-label">Score</div>
-                            <div class="stat-value" id="finalScore">0</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-label">Tokens</div>
-                            <div class="stat-value token-value" id="finalTokens">0</div>
-                        </div>
+                <div class="result-box">
+                    <div class="result-stat">
+                        <span class="result-label">Distance</span>
+                        <span class="result-value" id="finalScore">0m</span>
+                    </div>
+                    <div class="result-stat">
+                        <span class="result-label">Tokens Earned</span>
+                        <span class="result-value tokens" id="finalTokens">0 RUN</span>
+                    </div>
+                    <div class="result-stat">
+                        <span class="result-label">NFT Multiplier</span>
+                        <span class="result-value" id="finalMult">1.5x</span>
                     </div>
                 </div>
                 
-                <div class="cooldown-box">
-                    <div class="cooldown-title">
-                        <span>⏰</span> Reward Lock Active
-                    </div>
-                    <div class="cooldown-timer" id="cooldownTimer">15d 00h 00m</div>
-                    <div class="cooldown-desc">
-                        Your earnings are secured! Return in 15 days to withdraw your $RUN tokens.
+                <div style="background: #fff3cd; border-radius: 15px; padding: 15px; margin-bottom: 15px;">
+                    <div style="font-size: 20px; margin-bottom: 5px;">⏰</div>
+                    <div style="font-size: 13px; color: #856404; line-height: 1.4;">
+                        Your <strong id="earnedDisplay">0 RUN</strong> are secured!<br>
+                        Return in <span id="daysLeft">15</span> days to withdraw.
                     </div>
                 </div>
                 
-                <button class="action-btn" onclick="playAgain()" style="margin-top: 20px;">
+                <button class="action-btn" onclick="playAgain()">
                     Play Again 🔄
                 </button>
             </div>
@@ -742,13 +637,13 @@
             isPlaying: false,
             multiplier: 1,
             lastEarned: null,
-            cooldownDays: 15,
+            drawerOpen: false,
             nfts: {
-                1: { name: 'Legendary', multiplier: 5, price: 0.105, icon: '👑', color: '#fdcb6e', bg: 'linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)' },
-                2: { name: 'Epic', multiplier: 4, price: 0.085, icon: '💎', color: '#b2bec3', bg: 'linear-gradient(135deg, #dfe6e9 0%, #b2bec3 100%)' },
-                3: { name: 'Rare', multiplier: 3, price: 0.065, icon: '🏆', color: '#e17055', bg: 'linear-gradient(135deg, #fab1a0 0%, #e17055 100%)' },
-                4: { name: 'Uncommon', multiplier: 2, price: 0.045, icon: '🥈', color: '#0984e3', bg: 'linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)' },
-                5: { name: 'Common', multiplier: 1.5, price: 0.025, icon: '🥉', color: '#00b894', bg: 'linear-gradient(135deg, #55efc4 0%, #00b894 100%)' }
+                1: { name: 'Legendary', multiplier: 5, price: 0.105, icon: '👑', color: '#fdcb6e', supply: 100 },
+                2: { name: 'Epic', multiplier: 4, price: 0.085, icon: '💎', color: '#b2bec3', supply: 500 },
+                3: { name: 'Rare', multiplier: 3, price: 0.065, icon: '🏆', color: '#e17055', supply: 1500 },
+                4: { name: 'Uncommon', multiplier: 2, price: 0.045, icon: '🥈', color: '#0984e3', supply: 3000 },
+                5: { name: 'Common', multiplier: 1.5, price: 0.025, icon: '🥉', color: '#00b894', supply: 3900 }
             }
         };
 
@@ -756,7 +651,6 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         
-        // Set canvas size
         function resizeCanvas() {
             const container = document.querySelector('.mobile-container');
             canvas.width = container.clientWidth;
@@ -786,16 +680,15 @@
             });
         }
 
-        function toggleWallet() {
+        function showWalletModal() {
             if (!state.walletConnected) {
                 document.getElementById('walletModal').classList.remove('hidden');
             }
         }
 
         function connectWallet() {
-            // Simulate wallet connection
             state.walletConnected = true;
-            state.walletAddress = '0x' + Math.random().toString(16).substr(2, 6) + '...' + Math.random().toString(16).substr(2, 4);
+            state.walletAddress = '0x' + Math.random().toString(16).substr(2, 6) + '...';
             
             const btn = document.getElementById('walletBtn');
             btn.innerHTML = '<span>✅</span> ' + state.walletAddress;
@@ -804,21 +697,19 @@
             document.getElementById('walletModal').classList.add('hidden');
             document.getElementById('nftModal').classList.remove('hidden');
             
-            // Check existing cooldown
-            checkExistingCooldown();
+            checkExistingRewards();
         }
 
         function selectNFT(tier) {
             state.selectedTier = tier;
             state.multiplier = state.nfts[tier].multiplier;
             
-            // Update UI
             document.querySelectorAll('.nft-card').forEach((card, idx) => {
                 card.classList.toggle('selected', idx + 1 === tier);
             });
             
             document.getElementById('startBtn').disabled = false;
-            document.getElementById('startBtn').textContent = `Get ${state.nfts[tier].name} Buddy! 🚀`;
+            document.getElementById('startBtn').textContent = `Mint ${state.nfts[tier].name} NFT! 🚀`;
         }
 
         function startGame() {
@@ -826,15 +717,13 @@
             document.getElementById('gameHUD').style.display = 'flex';
             document.getElementById('touchControls').style.display = 'flex';
             document.getElementById('nftBadge').style.display = 'flex';
-            document.getElementById('withdrawalPanel').style.display = 'block';
+            document.getElementById('drawerToggle').style.display = 'flex';
             
-            // Update NFT badge
             const nft = state.nfts[state.selectedTier];
-            document.getElementById('nftBadgeIcon').textContent = nft.icon;
-            document.getElementById('nftBadgeName').textContent = nft.name;
-            document.getElementById('nftBadgeMult').textContent = nft.multiplier + 'x';
+            document.getElementById('nftIcon').textContent = nft.icon;
+            document.getElementById('nftMult').textContent = nft.multiplier + 'x';
             document.getElementById('nftBadge').style.borderColor = nft.color;
-            document.getElementById('nftBadgeMult').style.color = nft.color;
+            document.getElementById('nftBadge').style.color = nft.color;
             
             resetGame();
             state.isPlaying = true;
@@ -842,16 +731,8 @@
         }
 
         function resetGame() {
-            groundY = canvas.height - 150;
-            player = { 
-                x: 80, 
-                y: groundY - 50, 
-                width: 50, 
-                height: 50, 
-                velocityY: 0, 
-                grounded: true,
-                rotation: 0 
-            };
+            groundY = canvas.height - 140;
+            player = { x: 80, y: groundY - 50, width: 50, height: 50, velocityY: 0, grounded: true, rotation: 0 };
             obstacles = [];
             coins = [];
             particles = [];
@@ -865,67 +746,63 @@
         function handleJump(e) {
             e.preventDefault();
             if (state.isPlaying && player.grounded) {
-                player.velocityY = -18;
+                player.velocityY = -16;
                 player.grounded = false;
-                createParticles(player.x + 25, player.y + 50, 8, '#fff');
+                createParticles(player.x + 25, player.y + 50, 6, '#fff');
             }
         }
 
         function createParticles(x, y, count, color) {
             for (let i = 0; i < count; i++) {
                 particles.push({
-                    x: x,
-                    y: y,
-                    vx: (Math.random() - 0.5) * 6,
-                    vy: (Math.random() - 1) * 6,
-                    life: 40,
+                    x: x, y: y,
+                    vx: (Math.random() - 0.5) * 5,
+                    vy: (Math.random() - 1) * 5,
+                    life: 30,
                     color: color,
-                    size: Math.random() * 6 + 3
+                    size: Math.random() * 4 + 2
                 });
             }
         }
 
         function update() {
             if (!state.isPlaying) return;
-            
             frameCount++;
             
             // Physics
-            player.velocityY += 0.9;
+            player.velocityY += 0.8;
             player.y += player.velocityY;
             
-            // Ground collision
             if (player.y > groundY - player.height) {
                 player.y = groundY - player.height;
                 player.velocityY = 0;
                 player.grounded = true;
                 player.rotation = 0;
             } else {
-                // Rotate while jumping
-                player.rotation += 0.1;
+                player.rotation += 0.08;
             }
             
             // Spawn obstacles
-            if (frameCount % 100 === 0) {
+            if (frameCount % 90 === 0) {
                 const type = Math.random() > 0.6 ? 'bird' : 'cactus';
                 obstacles.push({
                     x: canvas.width,
-                    y: type === 'bird' ? groundY - 100 - Math.random() * 50 : groundY - 40,
-                    width: type === 'bird' ? 40 : 35,
-                    height: type === 'bird' ? 30 : 40,
+                    y: type === 'bird' ? groundY - 100 - Math.random() * 40 : groundY - 35,
+                    width: type === 'bird' ? 35 : 30,
+                    height: type === 'bird' ? 25 : 35,
                     type: type,
                     frame: 0
                 });
             }
             
             // Spawn coins
-            if (frameCount % 45 === 0 && Math.random() > 0.4) {
+            if (frameCount % 40 === 0 && Math.random() > 0.3) {
                 coins.push({
                     x: canvas.width,
-                    y: groundY - 80 - Math.random() * 80,
-                    size: 25,
+                    y: groundY - 70 - Math.random() * 60,
+                    size: 22,
                     collected: false,
-                    bob: 0
+                    bob: Math.random() * Math.PI
                 });
             }
             
@@ -933,40 +810,32 @@
             obstacles = obstacles.filter(obs => {
                 obs.x -= speed;
                 obs.frame++;
-                
-                // Collision
                 if (!obs.hit && checkCollision(player, obs)) {
                     obs.hit = true;
                     gameOver();
                     return false;
                 }
-                
                 return obs.x > -100;
             });
             
             // Update coins
             coins = coins.filter(coin => {
                 coin.x -= speed;
-                coin.bob += 0.1;
-                
+                coin.bob += 0.08;
                 if (!coin.collected && checkCoinCollision(player, coin)) {
                     coin.collected = true;
                     state.score += 10;
                     const earned = 1 * state.multiplier;
                     state.tokens += earned;
                     state.pendingTokens += earned;
-                    createParticles(coin.x, coin.y, 10, '#FFD93D');
+                    createParticles(coin.x, coin.y, 8, '#FFD93D');
                 }
-                
                 return coin.x > -50 && !coin.collected;
             });
             
             // Update particles
             particles = particles.filter(p => {
-                p.x += p.vx;
-                p.y += p.vy;
-                p.vy += 0.3;
-                p.life--;
+                p.x += p.vx; p.y += p.vy; p.vy += 0.2; p.life--;
                 return p.life > 0;
             });
             
@@ -976,11 +845,8 @@
                 if (cloud.x < -100) cloud.x = canvas.width + 100;
             });
             
-            // Increase speed
-            if (frameCount % 500 === 0) speed += 0.3;
-            
-            // Score over time
-            if (frameCount % 15 === 0) state.score += 1;
+            if (frameCount % 400 === 0) speed += 0.2;
+            if (frameCount % 10 === 0) state.score += 1;
             
             updateHUD();
             draw();
@@ -988,93 +854,86 @@
         }
 
         function checkCollision(a, b) {
-            return a.x < b.x + b.width - 10 &&
-                   a.x + a.width - 10 > b.x &&
-                   a.y < b.y + b.height - 10 &&
-                   a.y + a.height - 10 > b.y;
+            return a.x < b.x + b.width - 8 && a.x + a.width - 8 > b.x &&
+                   a.y < b.y + b.height - 8 && a.y + a.height - 8 > b.y;
         }
 
         function checkCoinCollision(a, coin) {
             const dx = (a.x + a.width/2) - coin.x;
-            const dy = (a.y + a.height/2) - (coin.y + Math.sin(coin.bob) * 5);
-            const dist = Math.sqrt(dx*dx + dy*dy);
-            return dist < (a.width/2 + coin.size/2);
+            const dy = (a.y + a.height/2) - (coin.y + Math.sin(coin.bob) * 4);
+            return Math.sqrt(dx*dx + dy*dy) < (a.width/2 + coin.size/2);
         }
 
         function draw() {
-            // Clear with gradient
-            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            gradient.addColorStop(0, '#87CEEB');
-            gradient.addColorStop(0.4, '#B8E6F0');
-            gradient.addColorStop(0.4, '#90EE90');
-            gradient.addColorStop(1, '#7FDD7F');
-            ctx.fillStyle = gradient;
+            // Background gradient
+            const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            grad.addColorStop(0, '#87CEEB');
+            grad.addColorStop(0.4, '#B8E6F0');
+            grad.addColorStop(0.4, '#90EE90');
+            grad.addColorStop(1, '#7FDD7F');
+            ctx.fillStyle = grad;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            // Draw clouds
+            // Clouds
             ctx.fillStyle = 'rgba(255,255,255,0.8)';
             clouds.forEach(cloud => {
                 ctx.beginPath();
                 ctx.arc(cloud.x, cloud.y, cloud.size, 0, Math.PI * 2);
-                ctx.arc(cloud.x + cloud.size * 0.6, cloud.y - cloud.size * 0.2, cloud.size * 0.8, 0, Math.PI * 2);
-                ctx.arc(cloud.x - cloud.size * 0.6, cloud.y - cloud.size * 0.1, cloud.size * 0.7, 0, Math.PI * 2);
+                ctx.arc(cloud.x + cloud.size*0.6, cloud.y - cloud.size*0.2, cloud.size*0.8, 0, Math.PI * 2);
+                ctx.arc(cloud.x - cloud.size*0.6, cloud.y - cloud.size*0.1, cloud.size*0.7, 0, Math.PI * 2);
                 ctx.fill();
             });
             
-            // Draw hills
+            // Hills
             ctx.fillStyle = '#98D98E';
             ctx.beginPath();
             ctx.moveTo(0, groundY);
-            for (let i = 0; i <= canvas.width; i += 50) {
-                ctx.lineTo(i, groundY - Math.sin(i * 0.01 + frameCount * 0.005) * 20 - 20);
+            for (let i = 0; i <= canvas.width; i += 40) {
+                ctx.lineTo(i, groundY - Math.sin(i * 0.01 + frameCount * 0.003) * 15 - 10);
             }
             ctx.lineTo(canvas.width, canvas.height);
             ctx.lineTo(0, canvas.height);
             ctx.fill();
             
-            // Draw ground
+            // Ground
             ctx.fillStyle = '#7FDD7F';
             ctx.fillRect(0, groundY, canvas.width, canvas.height - groundY);
             ctx.fillStyle = '#6BC96B';
-            ctx.fillRect(0, groundY, canvas.width, 8);
+            ctx.fillRect(0, groundY, canvas.width, 6);
             
-            // Draw grid pattern on ground
-            ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+            // Grid lines
+            ctx.strokeStyle = 'rgba(255,255,255,0.15)';
             ctx.lineWidth = 2;
-            for (let i = (frameCount * -speed) % 50; i < canvas.width; i += 50) {
+            for (let i = (frameCount * -speed) % 40; i < canvas.width; i += 40) {
                 ctx.beginPath();
                 ctx.moveTo(i, groundY);
-                ctx.lineTo(i - 20, canvas.height);
+                ctx.lineTo(i - 15, canvas.height);
                 ctx.stroke();
             }
             
-            // Draw player (Cute bunny mascot)
+            // Player
             drawBunny(player.x, player.y, player.width, player.height, player.rotation);
             
-            // Draw obstacles
+            // Obstacles
             obstacles.forEach(obs => {
-                if (obs.type === 'bird') {
-                    drawBird(obs.x, obs.y, obs.frame);
-                } else {
-                    drawCactus(obs.x, obs.y);
-                }
+                if (obs.type === 'bird') drawBird(obs.x, obs.y, obs.frame);
+                else drawCactus(obs.x, obs.y);
             });
             
-            // Draw coins
+            // Coins
             coins.forEach(coin => {
-                const bobY = Math.sin(coin.bob) * 5;
-                drawCoin(coin.x, coin.y + bobY, coin.size);
+                drawCoin(coin.x, coin.y + Math.sin(coin.bob) * 4, coin.size);
             });
             
-            // Draw particles
+            // Particles
             particles.forEach(p => {
                 ctx.fillStyle = p.color;
-                ctx.globalAlpha = p.life / 40;
+                ctx.globalAlpha = p.life / 30;
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
                 ctx.fill();
-                ctx.globalAlpha = 1;
             });
+            ctx.globalAlpha = 1;
         }
 
         function drawBunny(x, y, w, h, rotation) {
@@ -1085,7 +944,7 @@
             // Shadow
             ctx.fillStyle = 'rgba(0,0,0,0.1)';
             ctx.beginPath();
-            ctx.ellipse(0, h/2 + 5, w/2, 8, 0, 0, Math.PI * 2);
+            ctx.ellipse(0, h/2 + 5, w/2, 6, 0, 0, Math.PI * 2);
             ctx.fill();
             
             // Body
@@ -1094,28 +953,20 @@
             ctx.ellipse(0, 5, w/2 - 5, h/2 - 5, 0, 0, Math.PI * 2);
             ctx.fill();
             
-            // Inner ear color based on NFT tier
-            const tierColors = ['#fdcb6e', '#b2bec3', '#e17055', '#0984e3', '#00b894'];
-            const earColor = state.selectedTier ? tierColors[state.selectedTier - 1] : '#FFB6C1';
+            // Ears with tier color
+            const colors = ['#fdcb6e', '#b2bec3', '#e17055', '#0984e3', '#00b894'];
+            const earColor = state.selectedTier ? colors[state.selectedTier - 1] : '#FFB6C1';
             
-            // Ears
             ctx.fillStyle = '#FFFFFF';
-            // Left ear
             ctx.beginPath();
-            ctx.ellipse(-12, -20, 10, 22, -0.2, 0, Math.PI * 2);
-            ctx.fill();
-            // Right ear
-            ctx.beginPath();
-            ctx.ellipse(12, -20, 10, 22, 0.2, 0, Math.PI * 2);
+            ctx.ellipse(-12, -18, 9, 20, -0.2, 0, Math.PI * 2);
+            ctx.ellipse(12, -18, 9, 20, 0.2, 0, Math.PI * 2);
             ctx.fill();
             
-            // Inner ears
             ctx.fillStyle = earColor;
             ctx.beginPath();
-            ctx.ellipse(-12, -20, 5, 15, -0.2, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.ellipse(12, -20, 5, 15, 0.2, 0, Math.PI * 2);
+            ctx.ellipse(-12, -18, 4, 14, -0.2, 0, Math.PI * 2);
+            ctx.ellipse(12, -18, 4, 14, 0.2, 0, Math.PI * 2);
             ctx.fill();
             
             // Head
@@ -1124,38 +975,35 @@
             ctx.arc(0, -5, w/2 - 8, 0, Math.PI * 2);
             ctx.fill();
             
-            // Eyes
+            // Face
             ctx.fillStyle = '#2D3436';
             ctx.beginPath();
-            ctx.arc(-8, -5, 5, 0, Math.PI * 2);
-            ctx.arc(8, -5, 5, 0, Math.PI * 2);
+            ctx.arc(-7, -5, 4, 0, Math.PI * 2);
+            ctx.arc(7, -5, 4, 0, Math.PI * 2);
             ctx.fill();
             
-            // Eye shine
             ctx.fillStyle = '#FFFFFF';
             ctx.beginPath();
-            ctx.arc(-6, -7, 2, 0, Math.PI * 2);
-            ctx.arc(10, -7, 2, 0, Math.PI * 2);
+            ctx.arc(-5, -6, 1.5, 0, Math.PI * 2);
+            ctx.arc(9, -6, 1.5, 0, Math.PI * 2);
             ctx.fill();
             
-            // Nose
             ctx.fillStyle = '#FF6B6B';
             ctx.beginPath();
-            ctx.arc(0, 0, 3, 0, Math.PI * 2);
+            ctx.arc(0, 0, 2.5, 0, Math.PI * 2);
             ctx.fill();
             
-            // Cheeks
             ctx.fillStyle = 'rgba(255, 107, 107, 0.3)';
             ctx.beginPath();
-            ctx.arc(-15, 0, 4, 0, Math.PI * 2);
-            ctx.arc(15, 0, 4, 0, Math.PI * 2);
+            ctx.arc(-13, 0, 3, 0, Math.PI * 2);
+            ctx.arc(13, 0, 3, 0, Math.PI * 2);
             ctx.fill();
             
             // Feet
             ctx.fillStyle = '#FFFFFF';
             ctx.beginPath();
-            ctx.ellipse(-12, 20, 8, 6, 0, 0, Math.PI * 2);
-            ctx.ellipse(12, 20, 8, 6, 0, 0, Math.PI * 2);
+            ctx.ellipse(-11, 18, 7, 5, 0, 0, Math.PI * 2);
+            ctx.ellipse(11, 18, 7, 5, 0, 0, Math.PI * 2);
             ctx.fill();
             
             ctx.restore();
@@ -1163,114 +1011,111 @@
 
         function drawCactus(x, y) {
             ctx.fillStyle = '#27AE60';
-            // Main body
-            ctx.fillRect(x + 10, y, 15, 40);
-            // Left arm
-            ctx.fillRect(x, y + 10, 10, 8);
-            ctx.fillRect(x, y + 10, 8, 20);
-            // Right arm
-            ctx.fillRect(x + 25, y + 5, 10, 8);
-            ctx.fillRect(x + 27, y + 5, 8, 15);
+            ctx.fillRect(x + 8, y, 12, 35);
+            ctx.fillRect(x, y + 8, 10, 8);
+            ctx.fillRect(x, y + 8, 6, 18);
+            ctx.fillRect(x + 22, y + 5, 8, 6);
+            ctx.fillRect(x + 24, y + 5, 5, 12);
             
-            // Spikes
             ctx.fillStyle = '#1E8449';
             ctx.beginPath();
-            ctx.moveTo(x + 5, y + 15);
-            ctx.lineTo(x + 3, y + 12);
-            ctx.lineTo(x + 7, y + 15);
+            ctx.moveTo(x + 4, y + 12);
+            ctx.lineTo(x + 2, y + 9);
+            ctx.lineTo(x + 6, y + 12);
             ctx.fill();
         }
 
         function drawBird(x, y, frame) {
-            const wingY = Math.sin(frame * 0.3) * 5;
-            
-            // Body
+            const wingY = Math.sin(frame * 0.25) * 4;
             ctx.fillStyle = '#E74C3C';
             ctx.beginPath();
-            ctx.ellipse(x + 20, y + 15, 20, 12, 0, 0, Math.PI * 2);
+            ctx.ellipse(x + 18, y + 12, 18, 10, 0, 0, Math.PI * 2);
             ctx.fill();
-            
-            // Head
             ctx.beginPath();
-            ctx.arc(x + 35, y + 10, 10, 0, Math.PI * 2);
+            ctx.arc(x + 32, y + 8, 8, 0, Math.PI * 2);
             ctx.fill();
             
-            // Beak
             ctx.fillStyle = '#F39C12';
             ctx.beginPath();
-            ctx.moveTo(x + 42, y + 8);
-            ctx.lineTo(x + 50, y + 12);
-            ctx.lineTo(x + 42, y + 16);
+            ctx.moveTo(x + 38, y + 6);
+            ctx.lineTo(x + 45, y + 10);
+            ctx.lineTo(x + 38, y + 14);
             ctx.fill();
             
-            // Eye
             ctx.fillStyle = '#FFFFFF';
             ctx.beginPath();
-            ctx.arc(x + 38, y + 8, 3, 0, Math.PI * 2);
+            ctx.arc(x + 34, y + 6, 2.5, 0, Math.PI * 2);
             ctx.fill();
-            ctx.fillStyle = '#000000';
+            ctx.fillStyle = '#000';
             ctx.beginPath();
-            ctx.arc(x + 39, y + 8, 1.5, 0, Math.PI * 2);
+            ctx.arc(x + 35, y + 6, 1.2, 0, Math.PI * 2);
             ctx.fill();
             
-            // Wings
             ctx.fillStyle = '#C0392B';
             ctx.beginPath();
-            ctx.ellipse(x + 15, y + 10 + wingY, 12, 6, -0.3, 0, Math.PI * 2);
+            ctx.ellipse(x + 12, y + 8 + wingY, 10, 5, -0.2, 0, Math.PI * 2);
             ctx.fill();
         }
 
         function drawCoin(x, y, size) {
-            // Outer ring
             ctx.fillStyle = '#FFD93D';
             ctx.beginPath();
             ctx.arc(x, y, size/2, 0, Math.PI * 2);
             ctx.fill();
             
-            // Inner
-            ctx.fillStyle = '#FFE66D';
+            ctx.fillStyle = '#F39C12';
             ctx.beginPath();
             ctx.arc(x, y, size/2 - 3, 0, Math.PI * 2);
             ctx.fill();
             
-            // Shine
-            ctx.fillStyle = '#FFFFFF';
+            ctx.fillStyle = '#FFD93D';
             ctx.beginPath();
-            ctx.arc(x - 5, y - 5, 4, 0, Math.PI * 2);
+            ctx.arc(x, y, size/2 - 5, 0, Math.PI * 2);
             ctx.fill();
             
-            // RUN text
-            ctx.fillStyle = '#F39C12';
-            ctx.font = 'bold 12px Nunito';
+            ctx.fillStyle = '#FFFFFF';
+            ctx.beginPath();
+            ctx.arc(x - 4, y - 4, 3, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.fillStyle = '#E67E22';
+            ctx.font = 'bold 10px Nunito';
             ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText('$', x, y);
+            ctx.fillText('$', x, y + 3);
         }
 
         function updateHUD() {
             document.getElementById('scoreDisplay').textContent = state.score;
             document.getElementById('tokenDisplay').textContent = Math.floor(state.tokens);
-            document.getElementById('pendingAmount').textContent = Math.floor(state.pendingTokens) + ' RUN';
-            
-            updateWithdrawalButton();
+            document.getElementById('pendingBalance').textContent = Math.floor(state.pendingTokens) + ' RUN';
+            updateWithdrawalStatus();
+        }
+
+        function toggleDrawer() {
+            state.drawerOpen = !state.drawerOpen;
+            document.getElementById('rewardsDrawer').classList.toggle('open', state.drawerOpen);
         }
 
         function gameOver() {
             state.isPlaying = false;
             cancelAnimationFrame(gameLoop);
             
-            // Set cooldown if earned tokens
             if (state.pendingTokens > 0 && !state.lastEarned) {
                 state.lastEarned = Date.now();
                 localStorage.setItem('jumpyCooldown', state.lastEarned.toString());
                 localStorage.setItem('jumpyPending', state.pendingTokens.toString());
             }
             
-            document.getElementById('finalScore').textContent = state.score;
-            document.getElementById('finalTokens').textContent = Math.floor(state.pendingTokens);
-            document.getElementById('gameOverModal').classList.remove('hidden');
+            document.getElementById('finalScore').textContent = state.score + 'm';
+            document.getElementById('finalTokens').textContent = Math.floor(state.pendingTokens) + ' RUN';
+            document.getElementById('finalMult').textContent = state.multiplier + 'x';
+            document.getElementById('earnedDisplay').textContent = Math.floor(state.pendingTokens) + ' RUN';
             
-            startCooldownTimer();
+            const daysLeft = state.lastEarned ? 
+                Math.ceil((15 * 24 * 60 * 60 * 1000 - (Date.now() - state.lastEarned)) / (24 * 60 * 60 * 1000)) : 15;
+            document.getElementById('daysLeft').textContent = Math.max(0, daysLeft);
+            
+            document.getElementById('gameOverModal').classList.remove('hidden');
         }
 
         function playAgain() {
@@ -1280,96 +1125,77 @@
             gameLoop = requestAnimationFrame(update);
         }
 
-        function checkExistingCooldown() {
+        function checkExistingRewards() {
             const saved = localStorage.getItem('jumpyCooldown');
             const pending = localStorage.getItem('jumpyPending');
-            
             if (saved && pending) {
                 state.lastEarned = parseInt(saved);
                 state.pendingTokens = parseFloat(pending);
             }
         }
 
-        function updateWithdrawalButton() {
+        function updateWithdrawalStatus() {
             const btn = document.getElementById('withdrawBtn');
+            const statusText = document.getElementById('statusText');
+            const lockIcon = document.getElementById('lockIcon');
+            const timer = document.getElementById('cooldownTimer');
             
             if (!state.lastEarned || state.pendingTokens === 0) {
                 btn.disabled = true;
-                btn.innerHTML = '<span class="lock-icon">🔒</span>No Rewards';
                 btn.classList.remove('ready');
+                btn.textContent = 'No Rewards';
+                statusText.textContent = 'Play to earn $RUN';
+                lockIcon.textContent = '🎮';
+                timer.textContent = '--';
                 return;
             }
             
             const elapsed = Date.now() - state.lastEarned;
-            const remaining = (state.cooldownDays * 24 * 60 * 60 * 1000) - elapsed;
+            const remaining = (15 * 24 * 60 * 60 * 1000) - elapsed;
             
             if (remaining > 0) {
                 btn.disabled = true;
                 btn.classList.remove('ready');
+                btn.textContent = 'Locked';
+                statusText.textContent = 'Rewards secured';
+                lockIcon.textContent = '🔒';
+                
                 const days = Math.floor(remaining / (24 * 60 * 60 * 1000));
                 const hours = Math.floor((remaining % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
-                btn.innerHTML = `<span class="lock-icon">🔒</span>${days}d ${hours}h left`;
+                timer.textContent = `${days}d ${hours}h`;
             } else {
                 btn.disabled = false;
                 btn.classList.add('ready');
-                btn.innerHTML = '<span class="lock-icon">🔓</span>Withdraw Now!';
+                btn.textContent = 'Withdraw Now!';
+                statusText.textContent = 'Ready to claim!';
+                lockIcon.textContent = '🔓';
+                timer.textContent = '✅ Available';
             }
-        }
-
-        function startCooldownTimer() {
-            const display = document.getElementById('cooldownTimer');
-            
-            function update() {
-                if (!state.lastEarned) return;
-                
-                const elapsed = Date.now() - state.lastEarned;
-                const remaining = (state.cooldownDays * 24 * 60 * 60 * 1000) - elapsed;
-                
-                if (remaining > 0) {
-                    const days = Math.floor(remaining / (24 * 60 * 60 * 1000));
-                    const hours = Math.floor((remaining % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
-                    const mins = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000));
-                    display.textContent = `${days}d ${hours}h ${mins}m`;
-                } else {
-                    display.textContent = '✅ Ready!';
-                    display.style.color = '#00b894';
-                }
-            }
-            
-            update();
-            setInterval(update, 60000); // Update every minute
         }
 
         function withdrawTokens() {
             if (state.pendingTokens > 0) {
-                // Simulate withdrawal
-                alert(`🎉 Success!\n\n${Math.floor(state.pendingTokens)} $RUN tokens withdrawn to your wallet!\n\nTx: 0x${Math.random().toString(16).substr(2, 8)}...`);
-                
+                alert(`🎉 Success! ${Math.floor(state.pendingTokens)} $RUN withdrawn!\n\nTx: 0x${Math.random().toString(16).substr(2, 8)}...`);
                 state.pendingTokens = 0;
                 state.lastEarned = null;
                 localStorage.removeItem('jumpyCooldown');
                 localStorage.removeItem('jumpyPending');
-                
                 updateHUD();
-                document.getElementById('withdrawalPanel').style.display = 'none';
+                toggleDrawer();
             }
         }
 
-        // Prevent default touch behaviors
-        document.addEventListener('touchmove', function(e) {
+        // Prevent zoom/scroll
+        document.addEventListener('touchmove', e => {
             if (e.target === canvas) e.preventDefault();
         }, { passive: false });
         
-        document.addEventListener('gesturestart', function(e) {
-            e.preventDefault();
-        });
+        document.addEventListener('gesturestart', e => e.preventDefault());
 
-        // Initial draw
+        // Init
         resizeCanvas();
         draw();
-        
-        // Update withdrawal button periodically
-        setInterval(updateWithdrawalButton, 60000);
+        setInterval(updateWithdrawalStatus, 60000);
     </script>
 </body>
 </html>
